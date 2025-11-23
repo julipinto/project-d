@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
 import Main from "./features/main";
-import "./App.css"
+import "./App.css";
 
 const queryClient = new QueryClient({
   defaultOptions: {

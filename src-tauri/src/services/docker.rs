@@ -27,8 +27,12 @@ pub fn spawn_event_monitor(app: AppHandle) {
         filters.insert(
             "event".to_string(),
             vec![
-                "start".to_string(), "stop".to_string(), "die".to_string(),
-                "destroy".to_string(), "create".to_string(), "rename".to_string(),
+                "start".to_string(),
+                "stop".to_string(),
+                "die".to_string(),
+                "destroy".to_string(),
+                "create".to_string(),
+                "rename".to_string(),
             ],
         );
 

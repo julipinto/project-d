@@ -1,5 +1,5 @@
 import { HardDrive, Box, MoreVertical } from "lucide-solid";
-import { ContainerSummary } from "../types";
+import type { ContainerSummary } from "../types";
 
 interface Props {
   container: ContainerSummary;
@@ -69,7 +69,10 @@ export function ContainerItemRow(props: Props) {
 
       {/* Coluna 4: Ações */}
       <td class="p-4 text-right align-top">
-        <button class="p-2 hover:bg-neutral-800 rounded text-neutral-500 hover:text-white transition-colors">
+        <button
+          type="button"
+          class="p-2 hover:bg-neutral-800 rounded text-neutral-500 hover:text-white transition-colors"
+        >
           <MoreVertical class="w-4 h-4" />
         </button>
       </td>

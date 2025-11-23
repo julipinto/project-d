@@ -13,7 +13,7 @@ export function useDockerSystem() {
     // Se estivermos OFFLINE, inicia o polling
     if (!isDockerOnline()) {
       console.log("⚠️ Recuperação: Sondando Docker...");
-      
+
       // O 'as unknown as number' é um truque de segurança caso seu editor
       // esteja confuso entre os tipos do Node e do Navegador.
       interval = setInterval(async () => {
@@ -21,10 +21,10 @@ export function useDockerSystem() {
           await dockerInvoke("list_containers");
           console.log("✅ Docker voltou!");
           queryClient.invalidateQueries();
-        } catch (e) {
+        } catch (_e) {
           // Continua offline...
         }
-      }, 5000) as unknown as number; 
+      }, 5000) as unknown as number;
     }
 
     onCleanup(() => {
@@ -35,16 +35,16 @@ export function useDockerSystem() {
 
   // ... (o resto da função toggleDockerService continua igual)
   const toggleDockerService = async (action: "start" | "stop") => {
-      // ... seu código anterior ...
-      setIsToggling(true);
-      try {
-        await dockerInvoke("manage_docker", { action });
-        if (action === "stop") setIsDockerOnline(false);
-      } catch (err) {
-        alert(`Erro: ${err}`);
-      } finally {
-        setTimeout(() => setIsToggling(false), 2000);
-      }
+    // ... seu código anterior ...
+    setIsToggling(true);
+    try {
+      await dockerInvoke("manage_docker", { action });
+      if (action === "stop") setIsDockerOnline(false);
+    } catch (err) {
+      alert(`Erro: ${err}`);
+    } finally {
+      setTimeout(() => setIsToggling(false), 2000);
+    }
   };
 
   return {

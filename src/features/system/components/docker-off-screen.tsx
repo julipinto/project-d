@@ -19,12 +19,13 @@ export function DockerOffScreen(props: Props) {
       <div class="space-y-2">
         <h2 class="text-2xl font-bold text-white">Docker Engine Parado</h2>
         <p class="text-neutral-500 max-w-md mx-auto">
-          O serviço do Docker não está rodando no seu Fedora.
-          Inicie o motor para gerenciar seus containers.
+          O serviço do Docker não está rodando no seu Fedora. Inicie o motor para gerenciar seus
+          containers.
         </p>
       </div>
 
       <button
+        type="button"
         onClick={props.onTurnOn}
         disabled={props.isToggling}
         class="group relative inline-flex items-center justify-center px-8 py-3 font-semibold text-white transition-all duration-200 bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"

@@ -19,13 +19,11 @@ export default function Main() {
       {/* Conteúdo Protegido */}
       <div class="flex-1 p-8 overflow-auto">
         <div class="max-w-6xl mx-auto">
-          
           {/* AQUI ESTÁ A MÁGICA: O Guard envolve as features */}
           <ServiceGuard>
-             {/* Futuramente aqui teremos abas: <Tabs><Tab Containers /><Tab Volumes /></Tabs> */}
-             <ContainerList />
+            {/* Futuramente aqui teremos abas: <Tabs><Tab Containers /><Tab Volumes /></Tabs> */}
+            <ContainerList />
           </ServiceGuard>
-
         </div>
       </div>
     </main>

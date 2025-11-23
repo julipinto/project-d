@@ -1,4 +1,4 @@
-import { ContainerSummary } from "../types";
+import type { ContainerSummary } from "../types";
 
 export interface GroupedContainers {
   groups: Record<string, ContainerSummary[]>;
@@ -12,7 +12,7 @@ export function groupContainersByStack(list: ContainerSummary[]): GroupedContain
 
   list.forEach((container) => {
     // Optional chaining seguro para acessar a label
-    const projectName = container.Labels?.['com.docker.compose.project'];
+    const projectName = container.Labels?.["com.docker.compose.project"];
 
     if (projectName) {
       if (!groups[projectName]) groups[projectName] = [];

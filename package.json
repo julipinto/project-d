@@ -8,7 +8,13 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "format": "bun run format:front && bun run format:rust",
+    "format:front": "biome format --write ./src",
+    "format:rust": "cargo fmt --manifest-path src-tauri/Cargo.toml",
+    "lint": "bun run lint:front && bun run lint:rust",
+    "lint:front": "biome lint --write ./src",
+    "lint:rust": "cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings"
   },
   "license": "MIT",
   "dependencies": {
@@ -23,6 +29,7 @@
     "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.3.7",
     "@tauri-apps/cli": "^2",
     "autoprefixer": "^10.4.22",
     "postcss": "^8.5.6",

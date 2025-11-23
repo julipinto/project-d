@@ -1,6 +1,6 @@
 import { createSignal, For, Show } from "solid-js";
 import { ChevronRight, ChevronDown, Layers } from "lucide-solid";
-import { ContainerSummary } from "../types";
+import type { ContainerSummary } from "../types";
 import { ContainerItemRow } from "./container-item-row";
 
 interface Props {
@@ -14,14 +14,14 @@ export function ContainerGroup(props: Props) {
   const [isOpen, setIsOpen] = createSignal(props.defaultOpen || false);
 
   const toggle = () => setIsOpen(!isOpen());
-  
+
   // Computados simples
-  const runningCount = () => props.containers.filter(c => c.State === "running").length;
+  const runningCount = () => props.containers.filter((c) => c.State === "running").length;
 
   return (
     <>
       {/* 1. O Cabeçalho do Grupo (Clicável) */}
-      <tr 
+      <tr
         class="bg-neutral-800/20 hover:bg-neutral-800/50 cursor-pointer transition-colors select-none group"
         onClick={toggle}
       >
@@ -32,13 +32,13 @@ export function ContainerGroup(props: Props) {
                 <ChevronDown class="w-5 h-5" />
               </Show>
             </div>
-            
+
             <Layers class="w-5 h-5 text-blue-500/80" />
-            
+
             <span class="font-bold text-neutral-200 text-sm tracking-tight">{props.name}</span>
-            
+
             <span class="text-[10px] font-bold text-neutral-500 font-mono bg-neutral-900 border border-neutral-800 px-2 py-0.5 rounded ml-2">
-               {runningCount()}/{props.containers.length}
+              {runningCount()}/{props.containers.length}
             </span>
           </div>
         </td>
