@@ -1,55 +1,90 @@
 import { createEffect, createSignal, onCleanup } from "solid-js";
-import { useQueryClient } from "@tanstack/solid-query";
+import { useQuery, useQueryClient } from "@tanstack/solid-query";
+import { invoke } from "@tauri-apps/api/core";
 import { dockerInvoke, isDockerOnline, setIsDockerOnline } from "../../../lib/docker-state";
+
+const [pendingAction, setPendingAction] = createSignal<"start" | "stop" | null>(null);
+
+const SYSTEM_KEY = ["docker-system-status"];
 
 export function useDockerSystem() {
   const queryClient = useQueryClient();
-  const [isToggling, setIsToggling] = createSignal(false);
 
-  // --- LÓGICA DE POLLING ---
+  const isToggling = () => pendingAction() !== null;
+
+  // 1. Query de Ping
+  const query = useQuery(() => ({
+    queryKey: SYSTEM_KEY,
+    queryFn: async () => {
+      try {
+        await invoke("list_containers");
+        return true;
+      } catch (_e) {
+        return false;
+      }
+    },
+    refetchOnWindowFocus: true,
+    retry: false,
+    refetchInterval: (q) => {
+      if (isToggling()) return false;
+      return q.state.data === false ? 2000 : 10000;
+    },
+  }));
+
+  // 2. Polling de Recuperação
   createEffect(() => {
     let interval: number | undefined;
 
-    // Se estivermos OFFLINE, inicia o polling
     if (!isDockerOnline()) {
-      console.log("⚠️ Recuperação: Sondando Docker...");
-
-      // O 'as unknown as number' é um truque de segurança caso seu editor
-      // esteja confuso entre os tipos do Node e do Navegador.
       interval = setInterval(async () => {
         try {
-          await dockerInvoke("list_containers");
-          console.log("✅ Docker voltou!");
-          queryClient.invalidateQueries();
+          const isActive = await invoke<boolean>("is_docker_service_active");
+          if (isActive) {
+            console.log("✅ SystemD Ativo! Reconectando...");
+            await dockerInvoke("list_containers");
+            queryClient.invalidateQueries();
+          }
         } catch (_e) {
-          // Continua offline...
+          /* silêncio */
         }
       }, 5000) as unknown as number;
     }
 
     onCleanup(() => {
-      // Limpa o intervalo se o componente morrer ou se o docker voltar
       if (interval) clearInterval(interval);
     });
   });
 
-  // ... (o resto da função toggleDockerService continua igual)
   const toggleDockerService = async (action: "start" | "stop") => {
-    // ... seu código anterior ...
-    setIsToggling(true);
+    if (isToggling()) return;
+
+    setPendingAction(action);
+
     try {
+      if (action === "start") queryClient.setQueryData(SYSTEM_KEY, true);
+
       await dockerInvoke("manage_docker", { action });
+
       if (action === "stop") setIsDockerOnline(false);
+
+      setTimeout(async () => {
+        await query.refetch();
+        await queryClient.invalidateQueries();
+        setPendingAction(null); // Limpa o estado
+      }, 3000);
     } catch (err) {
       alert(`Erro: ${err}`);
-    } finally {
-      setTimeout(() => setIsToggling(false), 2000);
+      setPendingAction(null);
+      query.refetch();
     }
   };
 
   return {
-    isDockerDown: () => !isDockerOnline(),
+    isChecking: query.isLoading,
+    isDockerOnline,
     toggleDockerService,
+    pendingAction,
     isToggling,
+    refetch: query.refetch,
   };
 }

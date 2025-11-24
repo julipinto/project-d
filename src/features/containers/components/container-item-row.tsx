@@ -1,4 +1,4 @@
-import { HardDrive, Box, MoreVertical } from "lucide-solid";
+import { HardDrive, Box, EllipsisVertical } from "lucide-solid";
 import type { ContainerSummary } from "../types";
 
 interface Props {
@@ -73,7 +73,7 @@ export function ContainerItemRow(props: Props) {
           type="button"
           class="p-2 hover:bg-neutral-800 rounded text-neutral-500 hover:text-white transition-colors"
         >
-          <MoreVertical class="w-4 h-4" />
+          <EllipsisVertical class="w-4 h-4" />
         </button>
       </td>
     </tr>

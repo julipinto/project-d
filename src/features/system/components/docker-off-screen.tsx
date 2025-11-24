@@ -3,10 +3,12 @@ import { Show } from "solid-js";
 
 interface Props {
   onTurnOn: () => void;
-  isToggling: boolean;
+  pendingAction: "start" | "stop" | null;
 }
 
 export function DockerOffScreen(props: Props) {
+  const isLoading = () => props.pendingAction === "start";
+
   return (
     <div class="flex flex-col items-center justify-center h-[60vh] text-center space-y-6 animate-in fade-in zoom-in duration-300">
       <div class="relative">
@@ -27,13 +29,13 @@ export function DockerOffScreen(props: Props) {
       <button
         type="button"
         onClick={props.onTurnOn}
-        disabled={props.isToggling}
+        disabled={props.pendingAction !== null}
         class="group relative inline-flex items-center justify-center px-8 py-3 font-semibold text-white transition-all duration-200 bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        <Show when={props.isToggling} fallback={<Power class="w-5 h-5 mr-2" />}>
+        <Show when={isLoading()} fallback={<Power class="w-5 h-5 mr-2" />}>
           <Activity class="w-5 h-5 mr-2 animate-spin" />
         </Show>
-        {props.isToggling ? "Iniciando SystemD..." : "Iniciar Docker Engine"}
+        {isLoading() ? "Solicitando acesso root..." : "Iniciar Docker Engine"}
       </button>
     </div>
   );

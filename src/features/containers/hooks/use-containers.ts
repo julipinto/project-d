@@ -1,28 +1,30 @@
-import { createQuery, useQueryClient } from "@tanstack/solid-query";
+import { useQuery, useQueryClient } from "@tanstack/solid-query";
 import { listen } from "@tauri-apps/api/event";
 import { onCleanup, onMount } from "solid-js";
 import type { ContainerSummary } from "../types";
-import { dockerInvoke, isDockerOnline } from "../../../lib/docker-state"; // <--- Importe o Middleware
+import { dockerInvoke, isDockerOnline } from "../../../lib/docker-state";
+import { useDockerSystem } from "../../system/hooks/use-docker-system";
 
 export function useContainers() {
   const queryClient = useQueryClient();
+  const system = useDockerSystem();
 
-  const query = createQuery(() => ({
+  const query = useQuery(() => ({
     queryKey: ["containers"],
     queryFn: async () => {
       return await dockerInvoke<ContainerSummary[]>("list_containers");
     },
-    enabled: isDockerOnline(),
-    retry: 1, // Tenta 1 vez antes de desistir e deixar o middleware agir
-    staleTime: 10000,
+    enabled: isDockerOnline() && !system.isToggling(),
     refetchOnWindowFocus: false,
+    retry: false,
+    staleTime: 10000,
   }));
 
   onMount(async () => {
     let unlisten: (() => void) | undefined;
     try {
       unlisten = await listen("docker-event", () => {
-        if (isDockerOnline()) {
+        if (isDockerOnline() && !system.isToggling()) {
           queryClient.invalidateQueries({ queryKey: ["containers"] });
         }
       });

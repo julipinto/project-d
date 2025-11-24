@@ -1,16 +1,20 @@
-import { type ParentComponent, Show } from "solid-js";
+import { ParentComponent, Show } from "solid-js";
 import { useDockerSystem } from "../hooks/use-docker-system";
 import { DockerOffScreen } from "./docker-off-screen";
 
 export const ServiceGuard: ParentComponent = (props) => {
-  const { isDockerDown, toggleDockerService, isToggling } = useDockerSystem();
+  const { isDockerOnline, toggleDockerService, pendingAction } = useDockerSystem();
 
   return (
     <Show
-      when={!isDockerDown()} // Se estiver ONLINE, mostra filhos
+      when={isDockerOnline()}
       fallback={
-        // Se estiver OFFLINE, mostra tela vermelha
-        <DockerOffScreen onTurnOn={() => toggleDockerService("start")} isToggling={isToggling()} />
+        <div class="h-full w-full flex items-center justify-center bg-neutral-950">
+          <DockerOffScreen
+            onTurnOn={() => toggleDockerService("start")}
+            pendingAction={pendingAction()}
+          />
+        </div>
       }
     >
       {props.children}

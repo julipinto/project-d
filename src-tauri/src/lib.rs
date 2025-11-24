@@ -1,6 +1,10 @@
 mod commands;
 mod services;
 
+// To open DevTools automatically in development mode
+// #[cfg(debug_assertions)]
+// use tauri::Manager;
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -10,7 +14,7 @@ pub fn run() {
             // 1. Inicia monitor de eventos
             services::docker::spawn_event_monitor(handle);
 
-            // 2. FORÇA ABERTURA DO DEVTOOLS (Apenas em modo dev)
+            // 2. To open DevTools automatically in development mode
             // #[cfg(debug_assertions)]
             // {
             //     if let Some(window) = app.get_webview_window("main") {
@@ -22,7 +26,8 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             commands::containers::list_containers,
-            commands::system::manage_docker
+            commands::system::manage_docker,
+            commands::system::is_docker_service_active
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

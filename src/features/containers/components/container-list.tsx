@@ -10,7 +10,7 @@ import { ContainerItemRow } from "./container-item-row";
 export function ContainerList() {
   const query = useContainers();
 
-  const { toggleDockerService, isToggling } = useDockerSystem();
+  const { toggleDockerService, isToggling, pendingAction } = useDockerSystem();
 
   const data = createMemo(() => groupContainersByStack(query.data || []));
 
@@ -33,11 +33,10 @@ export function ContainerList() {
             class="flex items-center gap-2 text-xs font-bold text-red-400/80 hover:text-red-300 hover:bg-red-500/10 px-3 py-1.5 rounded transition-all border border-transparent hover:border-red-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Power class="w-3.5 h-3.5" />
-            {isToggling() ? "Stopping..." : "Stop Engine"}
+            {pendingAction() === "stop" ? "Stopping..." : "Stop Engine"}
           </button>
 
           <div class="flex items-center gap-2 text-xs font-mono bg-neutral-900 px-3 py-1.5 rounded border border-neutral-800 text-neutral-400">
-            {/* Acessamos query.isFetching diretamente no JSX */}
             <Show when={query.isFetching} fallback={<Zap class="w-3 h-3 text-emerald-500" />}>
               <RefreshCw class="w-3 h-3 animate-spin text-blue-500" />
             </Show>
