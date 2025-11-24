@@ -28,6 +28,7 @@ pub fn run() {
             commands::containers::list_containers,
             commands::containers::start_container,
             commands::containers::stop_container,
+            commands::containers::remove_container,
             commands::system::manage_docker,
             commands::system::is_docker_service_active,
             commands::images::list_images,

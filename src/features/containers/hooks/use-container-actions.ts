@@ -14,8 +14,14 @@ export function useContainerActions() {
     queryClient.invalidateQueries({ queryKey: ["containers"] });
   };
 
+  const removeContainer = async (id: string) => {
+    await dockerInvoke("remove_container", { id });
+    queryClient.invalidateQueries({ queryKey: ["containers"] });
+  };
+
   return {
     startContainer,
     stopContainer,
+    removeContainer,
   };
 }

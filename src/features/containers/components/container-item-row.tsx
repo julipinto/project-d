@@ -1,6 +1,6 @@
-import { HardDrive, Box, EllipsisVertical, LoaderCircle, Play, Square } from "lucide-solid";
-import type { ContainerSummary } from "../types";
+import { HardDrive, Box, Play, Square, LoaderCircle, EllipsisVertical, Trash2 } from "lucide-solid";
 import { createSignal, Show } from "solid-js";
+import { ContainerSummary } from "../types";
 import { useContainerActions } from "../hooks/use-container-actions";
 
 interface Props {
@@ -9,28 +9,48 @@ interface Props {
 }
 
 export function ContainerItemRow(props: Props) {
-  const { startContainer, stopContainer } = useContainerActions();
-  const [isLoading, setIsLoading] = createSignal(false);
+  const { startContainer, stopContainer, removeContainer } = useContainerActions();
+
+  // Estado mais granular: 'start' | 'stop' | 'delete' | null
+  const [actionState, setActionState] = createSignal<string | null>(null);
 
   const isRunning = () => props.container.State === "running";
   const shortId = () => props.container.Id.substring(0, 12);
   const imageName = () => props.container.Image.split(":")[0];
   const imageTag = () => props.container.Image.split(":")[1] || "latest";
 
-  const handleAction = async () => {
-    if (isLoading()) return;
-    setIsLoading(true);
+  // Handler para Start/Stop
+  const handleToggle = async () => {
+    if (actionState()) return;
+
+    const action = isRunning() ? "stop" : "start";
+    setActionState(action);
 
     try {
-      if (isRunning()) {
-        await stopContainer(props.container.Id);
-      } else {
-        await startContainer(props.container.Id);
-      }
+      if (action === "stop") await stopContainer(props.container.Id);
+      else await startContainer(props.container.Id);
     } catch (error) {
       console.error(error);
     } finally {
-      setIsLoading(false);
+      setActionState(null);
+    }
+  };
+
+  // Handler para Delete
+  const handleDelete = async () => {
+    if (actionState()) return;
+
+    const confirmed = confirm(
+      `Tem certeza que deseja remover o container ${props.container.Names[0] || shortId()}?`,
+    );
+    if (!confirmed) return;
+
+    setActionState("delete");
+    try {
+      await removeContainer(props.container.Id);
+    } catch (error) {
+      alert(`Erro: ${error}`);
+      setActionState(null); // Só reseta se der erro, se der sucesso o item some da lista
     }
   };
 
@@ -88,36 +108,54 @@ export function ContainerItemRow(props: Props) {
         </div>
       </td>
 
-      {/* Coluna 4: Ações (Botões) */}
+      {/* Coluna 4: Ações */}
       <td class="p-4 text-right align-top">
         <div class="flex items-center justify-end gap-2">
-          {/* BOTÃO DE START/STOP */}
+          {/* START / STOP */}
           <button
             type="button"
-            onClick={handleAction}
-            disabled={isLoading()}
+            onClick={handleToggle}
+            disabled={!!actionState()}
             title={isRunning() ? "Parar Container" : "Iniciar Container"}
             class={`
               p-2 rounded-lg transition-all border border-transparent
               disabled:opacity-50 disabled:cursor-not-allowed
               ${
                 isRunning()
-                  ? "text-red-400 hover:bg-red-500/10 hover:border-red-500/20"
-                  : "text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/20"
+                  ? "text-neutral-400 hover:text-amber-400 hover:bg-amber-500/10"
+                  : "text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10"
               }
             `}
           >
-            <Show when={!isLoading()} fallback={<LoaderCircle class="w-4 h-4 animate-spin" />}>
+            <Show
+              when={actionState() !== "start" && actionState() !== "stop"}
+              fallback={<LoaderCircle class="w-4 h-4 animate-spin" />}
+            >
               <Show when={isRunning()} fallback={<Play class="w-4 h-4 fill-current" />}>
                 <Square class="w-4 h-4 fill-current" />
               </Show>
             </Show>
           </button>
 
-          {/* Menu de Contexto (Placeholder) */}
+          {/* DELETE BUTTON */}
           <button
             type="button"
-            class="p-2 hover:bg-neutral-800 rounded text-neutral-500 hover:text-white transition-colors"
+            onClick={handleDelete}
+            disabled={!!actionState()}
+            title="Remover Container"
+            class="p-2 rounded-lg text-neutral-500 hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50"
+          >
+            <Show
+              when={actionState() !== "delete"}
+              fallback={<LoaderCircle class="w-4 h-4 animate-spin" />}
+            >
+              <Trash2 class="w-4 h-4" />
+            </Show>
+          </button>
+
+          <button
+            type="button"
+            class="p-2 hover:bg-neutral-800 rounded text-neutral-600 hover:text-white transition-colors"
           >
             <EllipsisVertical class="w-4 h-4" />
           </button>
