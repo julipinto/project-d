@@ -1,7 +1,10 @@
 use crate::services::docker;
 use bollard::query_parameters::{
-    ListContainersOptions, RemoveContainerOptions, StartContainerOptions, StopContainerOptions,
+    InspectContainerOptions, ListContainersOptions, RemoveContainerOptions, StartContainerOptions,
+    StopContainerOptions,
 };
+
+use bollard::models::ContainerInspectResponse;
 
 #[tauri::command]
 pub async fn list_containers() -> Result<Vec<bollard::models::ContainerSummary>, String> {
@@ -62,4 +65,17 @@ pub async fn remove_container(id: String) -> Result<(), String> {
         .map_err(|e| format!("Erro ao remover: {}", e))?;
 
     Ok(())
+}
+
+#[tauri::command]
+pub async fn inspect_container(id: String) -> Result<ContainerInspectResponse, String> {
+    let docker = docker::connect()?;
+
+    // CORREÇÃO AQUI: Tipamos o None com InspectContainerOptions
+    let result = docker
+        .inspect_container(&id, None::<InspectContainerOptions>)
+        .await
+        .map_err(|e| format!("Erro ao inspecionar: {}", e))?;
+
+    Ok(result)
 }

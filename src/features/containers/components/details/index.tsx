@@ -5,6 +5,7 @@ import { DetailsHeader } from "./details-header";
 import { DetailsTabs, type TabOption } from "./details-tabs";
 import { useUIStore } from "../../../../stores/ui-store";
 import { LogsTerminal } from "./logs-terminal";
+import { InspectView } from "./inspect";
 
 export const ContainerDetails: Component = () => {
   const { selectedContainerId, setSelectedContainerId } = useUIStore();
@@ -29,7 +30,7 @@ export const ContainerDetails: Component = () => {
           </Match>
 
           <Match when={activeTab() === "inspect"}>
-            <div class="p-8 text-neutral-500 font-mono text-sm">JSON Inspect (Em breve)</div>
+            <InspectView containerId={containerId()} />
           </Match>
 
           <Match when={activeTab() === "stats"}>
