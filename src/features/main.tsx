@@ -3,6 +3,7 @@ import { ContainerList } from "../features/containers/components/container-list"
 import { ServiceGuard } from "../features/system/components/service-guard";
 import { Sidebar } from "../ui/sidebar";
 import { useUIStore } from "../stores/ui-store";
+import { ImageList } from "./images/components/image-list";
 
 export default function Main() {
   const { activeView } = useUIStore();
@@ -22,10 +23,7 @@ export default function Main() {
                 </Match>
 
                 <Match when={activeView() === "images"}>
-                  <div class="p-12 text-center border border-dashed border-neutral-800 rounded-xl">
-                    <h2 class="text-xl font-bold text-neutral-500">Gerenciamento de Imagens</h2>
-                    <p class="text-neutral-600 mt-2">Em breve...</p>
-                  </div>
+                  <ImageList />
                 </Match>
 
                 <Match when={activeView() === "volumes"}>
