@@ -1,29 +1,51 @@
-import { Box } from "lucide-solid";
+import { Switch, Match } from "solid-js";
 import { ContainerList } from "../features/containers/components/container-list";
-import { ServiceGuard } from "../features/system/components/service-guard"; // <--- Importe o Guard
+import { ServiceGuard } from "../features/system/components/service-guard";
+import { Sidebar } from "../ui/sidebar";
+import { useUIStore } from "../stores/ui-store";
 
 export default function Main() {
-  return (
-    <main class="min-h-screen bg-neutral-950 text-neutral-200 font-sans selection:bg-blue-500/30 flex flex-col">
-      {/* Header Fixo */}
-      <header class="h-16 border-b border-neutral-800 bg-neutral-950 flex items-center px-8 justify-between sticky top-0 z-10">
-        <div class="flex items-center gap-3">
-          <div class="p-1.5 bg-blue-600/20 rounded-lg border border-blue-500/30">
-            <Box class="w-5 h-5 text-blue-400" />
-          </div>
-          <h1 class="font-bold tracking-tight text-lg">Docker Manager</h1>
-        </div>
-        <div class="text-xs text-neutral-600">v0.1.0-beta</div>
-      </header>
+  const { activeView } = useUIStore();
 
-      {/* Conteúdo Protegido */}
-      <div class="flex-1 p-8 overflow-auto">
-        <div class="max-w-6xl mx-auto">
-          <ServiceGuard>
-            <ContainerList />
-          </ServiceGuard>
-        </div>
+  return (
+    <ServiceGuard>
+      <div class="flex h-screen w-screen bg-neutral-950 text-neutral-200 font-sans selection:bg-blue-500/30 overflow-hidden">
+        <Sidebar />
+
+        {/* 2. Área de Conteúdo */}
+        <main class="flex-1 flex flex-col min-w-0 bg-black/20">
+          <div class="flex-1 overflow-auto p-8 custom-scrollbar">
+            <div class="max-w-7xl mx-auto">
+              <Switch>
+                <Match when={activeView() === "containers"}>
+                  <ContainerList />
+                </Match>
+
+                <Match when={activeView() === "images"}>
+                  <div class="p-12 text-center border border-dashed border-neutral-800 rounded-xl">
+                    <h2 class="text-xl font-bold text-neutral-500">Gerenciamento de Imagens</h2>
+                    <p class="text-neutral-600 mt-2">Em breve...</p>
+                  </div>
+                </Match>
+
+                <Match when={activeView() === "volumes"}>
+                  <div class="p-12 text-center border border-dashed border-neutral-800 rounded-xl">
+                    <h2 class="text-xl font-bold text-neutral-500">Gerenciamento de Volumes</h2>
+                    <p class="text-neutral-600 mt-2">Em breve...</p>
+                  </div>
+                </Match>
+
+                <Match when={activeView() === "settings"}>
+                  <div class="p-12 text-center border border-dashed border-neutral-800 rounded-xl">
+                    <h2 class="text-xl font-bold text-neutral-500">Configurações</h2>
+                    <p class="text-neutral-600 mt-2">Em breve...</p>
+                  </div>
+                </Match>
+              </Switch>
+            </div>
+          </div>
+        </main>
       </div>
-    </main>
+    </ServiceGuard>
   );
 }
