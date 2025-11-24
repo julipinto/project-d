@@ -8,6 +8,7 @@ import { ContainerList } from "./features/containers/components/list/container-l
 import { ImageList } from "./features/images/components/image-list";
 import { VolumeList } from "./features/volumes/components/volume-list";
 import { ContainerDetails } from "./features/containers/components/details";
+import { Footer } from "./ui/footer";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -66,6 +67,7 @@ function App() {
                 </Match>
               </Switch>
             </div>
+            <Footer />
           </main>
         </div>
       </ServiceGuard>
