@@ -3,12 +3,14 @@ import "./App.css";
 import { useUIStore } from "./stores/ui-store";
 import { ServiceGuard } from "./features/system/components/service-guard";
 import { Sidebar } from "./ui/sidebar";
-import { Match, type ParentComponent, Switch } from "solid-js";
+import { Match, type ParentComponent, Show, Switch } from "solid-js";
 import { ContainerList } from "./features/containers/components/list/container-list";
 import { ImageList } from "./features/images/components/image-list";
 import { VolumeList } from "./features/volumes/components/volume-list";
 import { ContainerDetails } from "./features/containers/components/details";
 import { Footer } from "./ui/footer";
+import { useSettingsStore } from "./stores/settings-store";
+import { SettingsPage } from "./features/settings";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -21,6 +23,7 @@ const queryClient = new QueryClient({
 
 function App() {
   const { activeView, selectedContainerId } = useUIStore();
+  const { showSystemMonitor } = useSettingsStore();
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -58,16 +61,15 @@ function App() {
                 </Match>
 
                 <Match when={activeView() === "settings"}>
-                  <PageWrapper>
-                    <div class="p-12 text-center border border-dashed border-neutral-800 rounded-xl">
-                      <h2 class="text-xl font-bold text-neutral-500">Configurações</h2>
-                      <p class="text-neutral-600 mt-2">Em breve...</p>
-                    </div>
-                  </PageWrapper>
+                  <div class="h-full w-full overflow-y-auto custom-scrollbar p-8">
+                    <SettingsPage />
+                  </div>
                 </Match>
               </Switch>
             </div>
-            <Footer />
+            <Show when={showSystemMonitor()}>
+              <Footer />
+            </Show>
           </main>
         </div>
       </ServiceGuard>
