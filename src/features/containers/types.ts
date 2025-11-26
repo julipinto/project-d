@@ -22,6 +22,7 @@ export interface ContainerInspectInfo {
     Running: boolean;
     // ... outros campos se precisar
   };
+  Name: string;
   Config: {
     Image: string;
     Cmd: string[];

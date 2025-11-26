@@ -1,34 +1,33 @@
-import { type Component, createEffect, createSignal, Show } from "solid-js";
+import { Component, createEffect, createSignal, Show } from "solid-js";
 import { SolidApexCharts } from "solid-apexcharts";
-import type { ApexOptions } from "apexcharts";
-import { Cpu, HardDrive, Loader2 } from "lucide-solid";
-import { formatBytes } from "../../../../../utils/format";
+import { ApexOptions } from "apexcharts";
+import { Cpu, HardDrive, Loader2, PowerOff } from "lucide-solid";
+import { useContainerInspect } from "../../../hooks/use-container-inspect";
 import { useContainerStats } from "../../../hooks/use-container-stats";
+import { formatBytes } from "../../../../../utils/format";
 
 interface Props {
   containerId: string;
 }
 
 export const StatsView: Component<Props> = (props) => {
-  const stats = useContainerStats(props.containerId);
+  // 1. Precisamos saber se está rodando
+  const inspect = useContainerInspect(props.containerId);
 
-  // Histórico para os gráficos
+  const stats = useContainerStats(props.containerId);
   const [cpuHistory, setCpuHistory] = createSignal<{ x: number; y: number }[]>([]);
   const [memHistory, setMemHistory] = createSignal<{ x: number; y: number }[]>([]);
   const [hasData, setHasData] = createSignal(false);
 
   createEffect(() => {
-    const now = Date.now();
     const s = stats();
-
     if (s.memory_limit > 0) {
       setHasData(true);
-      setCpuHistory((prev) => [...prev.slice(-30), { x: now, y: s.cpu_percent }]);
-      setMemHistory((prev) => [...prev.slice(-30), { x: now, y: s.memory_usage }]);
+      setCpuHistory((prev) => [...prev.slice(-30), { x: Date.now(), y: s.cpu_percent }]);
+      setMemHistory((prev) => [...prev.slice(-30), { x: Date.now(), y: s.memory_usage }]);
     }
   });
 
-  // Opções comuns
   const commonOptions: ApexOptions = {
     chart: {
       id: "realtime",
@@ -50,14 +49,27 @@ export const StatsView: Component<Props> = (props) => {
     tooltip: { theme: "dark", x: { show: false } },
     fill: {
       type: "gradient",
-      gradient: {
-        shadeIntensity: 1,
-        opacityFrom: 0.4,
-        opacityTo: 0.1,
-        stops: [0, 90, 100],
-      },
+      gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.1, stops: [0, 90, 100] },
     },
   };
+
+  // --- VERIFICAÇÃO DE ESTADO ---
+  // Se já carregou o inspect E não está rodando...
+  if (inspect.data && !inspect.data.State.Running) {
+    return (
+      <div class="h-full flex flex-col items-center justify-center text-neutral-500 space-y-4">
+        <div class="p-4 bg-neutral-900 rounded-full border border-neutral-800">
+          <PowerOff class="w-8 h-8 opacity-50" />
+        </div>
+        <div class="text-center">
+          <h3 class="text-lg font-medium text-neutral-300">Container Parado</h3>
+          <p class="text-sm max-w-xs mt-1">
+            Inicie o container para visualizar as métricas de CPU e Memória em tempo real.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div class="h-full overflow-y-auto p-6 custom-scrollbar relative">
@@ -71,6 +83,7 @@ export const StatsView: Component<Props> = (props) => {
         }
       >
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-6xl mx-auto">
+          {/* ... (O código dos gráficos continua exatamente igual ao anterior) ... */}
           {/* Card CPU */}
           <div class="bg-[#161b22] border border-neutral-800/50 p-5 rounded-xl shadow-sm overflow-hidden">
             <div class="flex items-center gap-3 mb-4">
@@ -135,9 +148,7 @@ export const StatsView: Component<Props> = (props) => {
                     min: 0,
                     max: undefined,
                     tickAmount: 4,
-                    labels: {
-                      formatter: (val: number) => formatBytes(val, 0),
-                    },
+                    labels: { formatter: (val: number) => formatBytes(val, 0) },
                   },
                 }}
                 series={[{ name: "Memory", data: memHistory() }]}
