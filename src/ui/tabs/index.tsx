@@ -1,6 +1,6 @@
 import { createSignal, createContext, useContext, type ParentComponent, Show } from "solid-js";
 
-// Contexto para saber qual aba está ativa
+// Contexto
 const TabsContext = createContext<{
   activeTab: () => string;
   setActiveTab: (v: string) => void;
@@ -17,7 +17,7 @@ export const Tabs: ParentComponent<{ defaultValue: string; class?: string }> = (
   );
 };
 
-// 2. Lista de Gatilhos (A barra de cima)
+// 2. Lista de Gatilhos
 export const TabsList: ParentComponent<{ class?: string }> = (props) => {
   return (
     <div class={`flex items-center border-b border-neutral-800 mb-6 ${props.class || ""}`}>
@@ -26,8 +26,8 @@ export const TabsList: ParentComponent<{ class?: string }> = (props) => {
   );
 };
 
-// 3. O Gatilho (Cada botão de aba)
-export const TabsTrigger: ParentComponent<{ value: string }> = (props) => {
+// 3. O Gatilho (CORREÇÃO AQUI)
+export const TabsTrigger: ParentComponent<{ value: string; class?: string }> = (props) => {
   const ctx = useContext(TabsContext);
   if (!ctx) throw new Error("TabsTrigger must be used within Tabs");
 
@@ -37,6 +37,7 @@ export const TabsTrigger: ParentComponent<{ value: string }> = (props) => {
     <button
       type="button"
       onClick={() => ctx.setActiveTab(props.value)}
+      // Adicionamos ${props.class || ""} no final da string de classes
       class={`
         px-4 py-2 text-sm font-medium border-b-2 transition-colors relative -bottom-[1px]
         ${
@@ -44,6 +45,7 @@ export const TabsTrigger: ParentComponent<{ value: string }> = (props) => {
             ? "border-blue-500 text-blue-400"
             : "border-transparent text-neutral-500 hover:text-neutral-300 hover:border-neutral-700"
         }
+        ${props.class || ""}
       `}
     >
       {props.children}

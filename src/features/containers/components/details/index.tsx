@@ -1,44 +1,55 @@
-import { type Component, createSignal, Match, Switch } from "solid-js";
+import type { Component } from "solid-js";
+import { FileText, Activity, Info } from "lucide-solid";
 
-// Componentes
+// 2. Componentes da Feature
 import { DetailsHeader } from "./details-header";
-import { DetailsTabs, type TabOption } from "./details-tabs";
+import { InspectView } from "./inspect";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../../ui/tabs";
 import { useUIStore } from "../../../../stores/ui-store";
 import { LogsTerminal } from "./logs/logs-terminal";
-import { InspectView } from "./inspect";
 import { StatsView } from "./stats";
 
 export const ContainerDetails: Component = () => {
   const { selectedContainerId, setSelectedContainerId } = useUIStore();
 
-  const [activeTab, setActiveTab] = createSignal<TabOption>("logs");
-
   const containerId = () => selectedContainerId() || "";
 
   return (
     <div class="flex flex-col h-full animate-in fade-in duration-300">
-      {/* 1. Header */}
+      {/* Header (Navegação e Status) */}
       <DetailsHeader containerId={containerId()} onBack={() => setSelectedContainerId(null)} />
 
-      {/* 2. Navegação */}
-      <DetailsTabs activeTab={activeTab()} onChange={setActiveTab} />
+      {/* 3. Implementação do UI Kit Tabs */}
+      <Tabs defaultValue="logs" class="flex-1 flex flex-col min-h-0">
+        {/* Barra de Navegação */}
+        <TabsList>
+          <TabsTrigger value="logs" class="flex items-center gap-2">
+            <FileText class="w-4 h-4" /> Logs
+          </TabsTrigger>
 
-      {/* 3. Área de Conteúdo Dinâmico */}
-      <div class="flex-1 bg-neutral-900/30 rounded-xl border border-neutral-800 overflow-hidden relative shadow-inner">
-        <Switch>
-          <Match when={activeTab() === "logs"}>
+          <TabsTrigger value="inspect" class="flex items-center gap-2">
+            <Info class="w-4 h-4" /> Inspect
+          </TabsTrigger>
+
+          <TabsTrigger value="stats" class="flex items-center gap-2">
+            <Activity class="w-4 h-4" /> Stats
+          </TabsTrigger>
+        </TabsList>
+
+        <div class="flex-1 bg-neutral-900/30 rounded-xl border border-neutral-800 overflow-hidden relative shadow-inner">
+          <TabsContent value="logs" class="h-full">
             <LogsTerminal containerId={containerId()} />
-          </Match>
+          </TabsContent>
 
-          <Match when={activeTab() === "inspect"}>
+          <TabsContent value="inspect" class="h-full">
             <InspectView containerId={containerId()} />
-          </Match>
+          </TabsContent>
 
-          <Match when={activeTab() === "stats"}>
+          <TabsContent value="stats" class="h-full">
             <StatsView containerId={containerId()} />
-          </Match>
-        </Switch>
-      </div>
+          </TabsContent>
+        </div>
+      </Tabs>
     </div>
   );
 };
