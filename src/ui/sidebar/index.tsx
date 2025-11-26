@@ -1,5 +1,5 @@
 import { Box, Layers, Database, Settings } from "lucide-solid";
-import type { Component } from "solid-js";
+import { Component } from "solid-js";
 import { useUIStore } from "../../stores/ui-store";
 
 import { SidebarHeader } from "./sidebar-header";
@@ -12,16 +12,24 @@ export const Sidebar: Component = () => {
   return (
     <aside
       class={`
-        h-screen bg-neutral-950 border-r border-neutral-800 flex flex-col 
-        transition-all duration-300 ease-in-out z-20
-        ${isSidebarExpanded() ? "w-64" : "w-20"}
+        h-screen flex flex-col transition-all duration-300 ease-in-out z-20
+        border-r border-white/5 
+        ${/* Mudança de cor de fundo para criar contraste com o dashboard */ ""}
+        bg-[#09090b] 
+        ${isSidebarExpanded() ? "w-64" : "w-[70px]"}
       `}
     >
-      {/* 1. Header */}
       <SidebarHeader isExpanded={isSidebarExpanded()} />
 
-      {/* 2. Menu Principal */}
-      <nav class="flex-1 px-3 space-y-1">
+      {/* Área de Navegação com padding mais refinado */}
+      <nav class="flex-1 px-3 py-4 space-y-1">
+        {/* Label de Seção (Só aparece expandido) */}
+        <div
+          class={`px-3 mb-2 text-[10px] font-bold text-neutral-600 uppercase tracking-wider transition-opacity ${isSidebarExpanded() ? "opacity-100" : "opacity-0 h-0"}`}
+        >
+          Gerenciamento
+        </div>
+
         <SidebarItem
           icon={Box}
           label="Containers"
@@ -45,8 +53,7 @@ export const Sidebar: Component = () => {
         />
       </nav>
 
-      {/* 3. Rodapé (Settings + Toggle) */}
-      <div class="p-3 border-t border-neutral-800 space-y-1">
+      <div class="p-3 border-t border-white/5 space-y-1">
         <SidebarItem
           icon={Settings}
           label="Configurações"
