@@ -1,4 +1,4 @@
-use crate::services::docker::{DockerConfig, DockerVariant};
+use crate::services::docker::{self, DockerConfig, DockerVariant};
 use std::process::Command;
 use std::time::Duration;
 use tauri::State;
@@ -43,6 +43,18 @@ pub async fn manage_docker(
             Err("Não é possível controlar o ciclo de vida remoto via botão.".to_string())
         }
     }
+}
+
+#[tauri::command]
+pub async fn ping_docker(state: State<'_, DockerConfig>) -> Result<String, String> {
+    let docker = docker::connect(&state)?;
+
+    docker
+        .ping()
+        .await
+        .map_err(|e| format!("Ping falhou: {}", e))?;
+
+    Ok("PONG".to_string())
 }
 
 // --- HELPERS ---

@@ -5,14 +5,16 @@ import type { ContainerSummary } from "../types";
 import { dockerInvoke, isDockerOnline } from "../../../lib/docker-state";
 import { useDockerSystem } from "../../system/hooks/use-docker-system";
 
-export function useContainers() {
+export function useContainers(searchParam: () => string) {
   const queryClient = useQueryClient();
   const system = useDockerSystem();
 
   const query = useQuery(() => ({
-    queryKey: ["containers"],
+    queryKey: ["containers", searchParam()],
     queryFn: async () => {
-      return await dockerInvoke<ContainerSummary[]>("list_containers");
+      return await dockerInvoke<ContainerSummary[]>("list_containers", {
+        search: searchParam() || null,
+      });
     },
     enabled: isDockerOnline() && !system.isToggling(),
     refetchOnWindowFocus: false,

@@ -17,7 +17,7 @@ export function useDockerSystem() {
     queryKey: SYSTEM_KEY,
     queryFn: async () => {
       try {
-        await invoke("list_containers");
+        await invoke("ping_docker");
         return true;
       } catch (_e) {
         return false;
@@ -41,7 +41,7 @@ export function useDockerSystem() {
           const isActive = await invoke<boolean>("is_docker_service_active");
           if (isActive) {
             console.log("✅ SystemD Ativo! Reconectando...");
-            await dockerInvoke("list_containers");
+            await dockerInvoke("ping_docker");
             queryClient.invalidateQueries();
           }
         } catch (_e) {

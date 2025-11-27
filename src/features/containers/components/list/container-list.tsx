@@ -6,9 +6,13 @@ import { useDockerSystem } from "../../../system/hooks/use-docker-system";
 import { groupContainersByStack } from "../../utils/grouping";
 import { ContainerGroup } from "./container-group";
 import { ContainerItemRow } from "./container-item-row";
+import { createDebouncedSignal } from "../../../../utils/debounce";
+import { SearchInput } from "../../../../ui/search-input";
 
 export function ContainerList() {
-  const query = useContainers();
+  const [inputValue, setInputValue, searchQuery] = createDebouncedSignal("", 300);
+
+  const query = useContainers(searchQuery);
 
   const { toggleDockerService, isToggling, pendingAction } = useDockerSystem();
 
@@ -25,7 +29,13 @@ export function ContainerList() {
           </p>
         </div>
 
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3 flex-1 justify-end">
+          <SearchInput
+            value={inputValue()}
+            onInput={setInputValue}
+            placeholder="Buscar containers..."
+          />
+
           <button
             type="button"
             onClick={() => toggleDockerService("stop")}
@@ -73,11 +83,11 @@ export function ContainerList() {
               <tr>
                 <td colspan={5} class="p-12 text-center text-neutral-500">
                   <div class="flex flex-col items-center gap-2">
-                    <Show when={query.isLoading} fallback={<Box class="w-8 h-8 opacity-20" />}>
+                    <Show when={query.isFetching} fallback={<Box class="w-8 h-8 opacity-20" />}>
                       <RefreshCw class="w-8 h-8 opacity-50 animate-spin" />
                     </Show>
                     <span class="italic">
-                      {query.isLoading
+                      {query.isFetching
                         ? "Carregando containers..."
                         : "Nenhum container rodando no momento."}
                     </span>

@@ -44,6 +44,7 @@ pub fn run() {
             commands::containers::manage_container_group,
             commands::system::manage_docker,
             commands::system::is_docker_service_active,
+            commands::system::ping_docker,
             commands::images::list_images,
             commands::images::remove_image,
             commands::volumes::list_volumes,

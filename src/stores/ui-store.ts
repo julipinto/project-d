@@ -25,7 +25,6 @@ export const useUIStore = () => {
       setViewSignal(view);
       setSelectedContainerId(null);
     },
-
     selectedContainerId,
     setSelectedContainerId,
   };
