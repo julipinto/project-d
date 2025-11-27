@@ -12,7 +12,7 @@ export const VolumeItemRow: Component<Props> = (props) => {
   const { removeVolume } = useVolumeActions();
   const [isDeleting, setIsDeleting] = createSignal(false);
 
-  // Tratamento de data (String ISO -> Timestamp Unix)
+  // Data no formato ISO string -> Timestamp
   const createdTimestamp = () => {
     if (!props.volume.CreatedAt) return Date.now() / 1000;
     return new Date(props.volume.CreatedAt).getTime() / 1000;
@@ -20,8 +20,9 @@ export const VolumeItemRow: Component<Props> = (props) => {
 
   const handleDelete = async () => {
     if (isDeleting()) return;
+
     const confirmed = confirm(
-      `Tem certeza que deseja remover o volume "${props.volume.Name}"?\nIsso apagará todos os dados contidos nele.`,
+      `Tem certeza que deseja remover o volume "${props.volume.Name}"?\nIsso apagará todos os dados permanentemente.`,
     );
     if (!confirmed) return;
 
@@ -29,27 +30,26 @@ export const VolumeItemRow: Component<Props> = (props) => {
     try {
       await removeVolume(props.volume.Name);
     } catch (error) {
-      alert(String(error));
-    } finally {
-      setIsDeleting(false);
+      alert(`Erro: ${error}`);
+      setIsDeleting(false); // Só reseta se der erro
     }
   };
 
   return (
     <tr class="group hover:bg-neutral-800/40 transition-colors duration-150 border-b border-transparent hover:border-neutral-800">
-      {/* Coluna 1: Nome e Driver */}
+      {/* Nome e Driver */}
       <td class="p-4 align-top">
         <div class="flex items-start gap-3">
-          <div class="mt-1 text-amber-500">
+          <div class="mt-1 text-amber-500 shrink-0">
             <Database class="w-5 h-5" />
           </div>
 
-          <div class="max-w-xs overflow-hidden">
-            <div class="font-medium text-neutral-200 truncate" title={props.volume.Name}>
+          <div class="flex flex-col min-w-0">
+            <div class="font-medium text-neutral-200 truncate max-w-xs" title={props.volume.Name}>
               {props.volume.Name}
             </div>
             <div class="flex items-center gap-2 mt-1">
-              <span class="text-xs text-neutral-500 font-mono bg-neutral-950 px-1.5 py-0.5 rounded border border-neutral-800">
+              <span class="text-[10px] uppercase tracking-wider text-neutral-500 font-mono bg-neutral-950 px-1.5 py-0.5 rounded border border-neutral-800">
                 {props.volume.Driver}
               </span>
             </div>
@@ -57,15 +57,15 @@ export const VolumeItemRow: Component<Props> = (props) => {
         </div>
       </td>
 
-      {/* Coluna 2: Mountpoint (Onde fica no disco) */}
+      {/* Mountpoint */}
       <td class="p-4 align-top text-xs font-mono text-neutral-500 pt-5">
-        <div class="flex items-center gap-2" title={props.volume.Mountpoint}>
-          <FolderOpen class="w-4 h-4 opacity-50" />
-          <span class="truncate max-w-[200px] direction-rtl">{props.volume.Mountpoint}</span>
+        <div class="flex items-center gap-2 group/mount" title={props.volume.Mountpoint}>
+          <FolderOpen class="w-4 h-4 opacity-30 group-hover/mount:opacity-100 transition-opacity" />
+          <span class="truncate max-w-[250px] direction-rtl">{props.volume.Mountpoint}</span>
         </div>
       </td>
 
-      {/* Coluna 3: Data */}
+      {/* Data */}
       <td class="p-4 align-top pt-5">
         <div class="flex items-center gap-2 text-neutral-500">
           <Clock class="w-4 h-4 opacity-50" />
@@ -73,11 +73,11 @@ export const VolumeItemRow: Component<Props> = (props) => {
         </div>
       </td>
 
-      {/* Coluna 4: Ações */}
+      {/* Ações */}
       <td class="p-4 text-right align-top pt-4">
         <button
           type="button"
-          class="p-2 hover:bg-red-900/20 rounded-lg text-neutral-500 hover:text-red-400 transition-colors disabled:opacity-50"
+          class="p-2 hover:bg-red-900/20 rounded-lg text-neutral-500 hover:text-red-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           title="Remover Volume"
           onClick={handleDelete}
           disabled={isDeleting()}
