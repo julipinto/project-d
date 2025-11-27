@@ -2,24 +2,39 @@ import { For, Show } from "solid-js";
 import { RefreshCw, Zap, Box } from "lucide-solid";
 import { useImages } from "../hooks/use-images";
 import { ImageItemRow } from "./image-item-row";
+import { createDebouncedSignal } from "../../../utils/debounce";
+import { SearchInput } from "../../../ui/search-input";
 
 export function ImageList() {
-  const query = useImages();
+  // 1. Configura o estado da busca com debounce
+  const [inputValue, setInputValue, searchQuery] = createDebouncedSignal("", 300);
+  // 2. Passa o sinal de busca para o hook
+  const query = useImages(searchQuery);
 
   return (
     <div class="space-y-6 pb-12">
       {/* Header */}
-      <div class="flex justify-between items-end border-b border-neutral-800 pb-4">
+      <div class="flex justify-between items-end border-b border-neutral-800 pb-4 gap-4">
         <div>
           <h2 class="text-2xl font-bold text-white tracking-tight">Imagens Locais</h2>
           <p class="text-neutral-500 text-sm mt-1">{query.data?.length || 0} imagens armazenadas</p>
         </div>
 
-        <div class="flex items-center gap-2 text-xs font-mono bg-neutral-900 px-3 py-1.5 rounded border border-neutral-800 text-neutral-400">
-          <Show when={query.isFetching} fallback={<Zap class="w-3 h-3 text-emerald-500" />}>
-            <RefreshCw class="w-3 h-3 animate-spin text-blue-500" />
-          </Show>
-          <span>{query.isFetching ? "SYNCING" : "ONLINE"}</span>
+        <div class="flex items-center gap-3 flex-1 justify-end">
+          {/* Barra de Busca */}
+          <SearchInput
+            value={inputValue()}
+            onInput={setInputValue}
+            placeholder="Buscar imagem por tag ou ID..."
+          />
+
+          {/* Status Pill */}
+          <div class="flex items-center gap-2 text-xs font-mono bg-neutral-900 px-3 py-1.5 rounded border border-neutral-800 text-neutral-400 whitespace-nowrap">
+            <Show when={query.isFetching} fallback={<Zap class="w-3 h-3 text-emerald-500" />}>
+              <RefreshCw class="w-3 h-3 animate-spin text-blue-500" />
+            </Show>
+            <span>{query.isFetching ? "SYNCING" : "ONLINE"}</span>
+          </div>
         </div>
       </div>
 
@@ -38,13 +53,15 @@ export function ImageList() {
           <tbody class="divide-y divide-neutral-800/50 text-sm">
             <For each={query.data}>{(img) => <ImageItemRow image={img} />}</For>
 
-            {/* Fallback para lista vazia */}
+            {/* Estado Vazio / Buscando */}
             <Show when={query.data?.length === 0}>
               <tr>
                 <td colspan={5} class="p-12 text-center text-neutral-500">
                   <div class="flex flex-col items-center gap-2">
                     <Box class="w-8 h-8 opacity-20" />
-                    <span class="italic">Nenhuma imagem encontrada localmente.</span>
+                    <span class="italic">
+                      {query.isLoading ? "Buscando..." : "Nenhuma imagem encontrada."}
+                    </span>
                   </div>
                 </td>
               </tr>
