@@ -1,8 +1,10 @@
 use crate::services::docker::{self, DockerConfig};
-use bollard::models::ContainerInspectResponse;
+#[allow(deprecated)]
+use bollard::container::Config;
+use bollard::models::{ContainerInspectResponse, HostConfig, PortBinding};
 use bollard::query_parameters::{
-    InspectContainerOptions, ListContainersOptions, RemoveContainerOptions, StartContainerOptions,
-    StopContainerOptions,
+    CreateContainerOptions, InspectContainerOptions, ListContainersOptions, RemoveContainerOptions,
+    StartContainerOptions, StopContainerOptions,
 };
 use std::collections::HashMap;
 use tauri::State;
@@ -24,34 +26,26 @@ pub async fn list_containers(
         .await
         .map_err(|e| format!("Erro ao listar: {}", e))?;
 
-    // Lógica de Filtragem
     if let Some(query) = search {
         let q = query.trim().to_lowercase();
         if !q.is_empty() {
             containers.retain(|c| {
-                // 1. Verifica Nome
                 let match_name = c
                     .names
                     .as_ref()
                     .is_some_and(|names| names.iter().any(|n| n.to_lowercase().contains(&q)));
-
-                // 2. Verifica Imagem
-                let match_image = c.image.as_ref().is_some_and(|img| {
-                    img.to_lowercase().contains(&q) // <--- to_lowercase aqui!
-                });
-
-                // 3. Verifica ID
+                let match_image = c
+                    .image
+                    .as_ref()
+                    .is_some_and(|img| img.to_lowercase().contains(&q));
                 let match_id =
                     c.id.as_ref()
                         .is_some_and(|id| id.to_lowercase().contains(&q));
-
-                // Procura especificamente na label de projeto do Docker Compose
                 let match_group = c.labels.as_ref().is_some_and(|labels| {
                     labels
                         .get("com.docker.compose.project")
-                        .is_some_and(|project_name| project_name.to_lowercase().contains(&q))
+                        .is_some_and(|proj| proj.to_lowercase().contains(&q))
                 });
-
                 match_name || match_image || match_id || match_group
             });
         }
@@ -115,19 +109,16 @@ pub async fn manage_container_group(
     action: String,
 ) -> Result<(), String> {
     let docker = docker::connect(&state)?;
-
     let mut filters = HashMap::new();
     filters.insert(
         "label".to_string(),
         vec![format!("com.docker.compose.project={}", group)],
     );
-
     let list_options = Some(ListContainersOptions {
         all: true,
         filters: Some(filters),
         ..Default::default()
     });
-
     let containers = docker
         .list_containers(list_options)
         .await
@@ -150,12 +141,106 @@ pub async fn manage_container_group(
                     err: std::io::Error::new(std::io::ErrorKind::InvalidInput, "Ação inválida"),
                 }),
             };
-
             if let Err(e) = result {
                 eprintln!("Erro ao executar {} no container {}: {}", action, id, e);
             }
         }
     }
-
     Ok(())
+}
+
+// --- STRUCT E FUNÇÃO DE CRIAÇÃO ---
+
+#[derive(serde::Deserialize)]
+pub struct RunContainerConfig {
+    image: String,
+    name: Option<String>,
+    ports: Vec<(String, String)>,
+    env: Vec<(String, String)>,
+}
+
+#[tauri::command]
+#[allow(deprecated)]
+pub async fn create_and_start_container(
+    state: State<'_, DockerConfig>,
+    config: RunContainerConfig,
+) -> Result<String, String> {
+    let docker = docker::connect(&state)?;
+
+    let mut port_bindings = HashMap::new();
+    let mut exposed_ports = HashMap::new();
+
+    for (host_port, container_port) in config.ports {
+        let container_key = format!("{}/tcp", container_port);
+        exposed_ports.insert(container_key.clone(), HashMap::new());
+        port_bindings.insert(
+            container_key,
+            Some(vec![PortBinding {
+                host_ip: Some("0.0.0.0".to_string()),
+                host_port: Some(host_port),
+            }]),
+        );
+    }
+
+    let envs: Vec<String> = config
+        .env
+        .iter()
+        .map(|(k, v)| format!("{}={}", k, v))
+        .collect();
+
+    let host_config = HostConfig {
+        port_bindings: Some(port_bindings),
+        ..Default::default()
+    };
+
+    let container_config = Config {
+        image: Some(config.image),
+        exposed_ports: Some(exposed_ports),
+        env: Some(envs),
+        host_config: Some(host_config),
+        ..Default::default()
+    };
+
+    let options = config
+        .name
+        .filter(|n| !n.is_empty())
+        .map(|name| CreateContainerOptions {
+            name: Some(name),
+            ..Default::default()
+        });
+
+    // 1. CRIAÇÃO
+    let create_res = docker
+        .create_container(options, container_config)
+        .await
+        .map_err(|e| format!("Erro ao criar: {}", e))?;
+
+    // 2. TENTATIVA DE START COM ROLLBACK
+    if let Err(start_err) = docker
+        .start_container(&create_res.id, None::<StartContainerOptions>)
+        .await
+    {
+        // Opa! Falhou ao iniciar (provavelmente porta em uso).
+        // Vamos limpar a sujeira deletando o container criado.
+        let remove_opts = Some(RemoveContainerOptions {
+            force: true,
+            ..Default::default()
+        });
+
+        // Tentamos remover. Se falhar a remoção, não temos muito o que fazer além de logar.
+        if let Err(rm_err) = docker.remove_container(&create_res.id, remove_opts).await {
+            eprintln!(
+                "Falha ao fazer rollback do container {}: {}",
+                create_res.id, rm_err
+            );
+        }
+
+        // Retorna o erro original para o usuário saber que a porta estava em uso
+        return Err(format!(
+            "Falha ao iniciar (Rollback executado): {}",
+            start_err
+        ));
+    }
+
+    Ok(create_res.id)
 }

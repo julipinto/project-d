@@ -42,6 +42,7 @@ pub fn run() {
             commands::containers::remove_container,
             commands::containers::inspect_container,
             commands::containers::manage_container_group,
+            commands::containers::create_and_start_container,
             commands::system::manage_docker,
             commands::system::is_docker_service_active,
             commands::system::ping_docker,
