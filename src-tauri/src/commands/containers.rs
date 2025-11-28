@@ -1,7 +1,6 @@
 use crate::services::docker::{self, DockerConfig};
-#[allow(deprecated)]
-use bollard::container::Config;
-use bollard::models::{ContainerInspectResponse, HostConfig, PortBinding};
+
+use bollard::models::{ContainerCreateBody, ContainerInspectResponse, HostConfig, PortBinding};
 use bollard::query_parameters::{
     CreateContainerOptions, InspectContainerOptions, ListContainersOptions, RemoveContainerOptions,
     StartContainerOptions, StopContainerOptions,
@@ -160,7 +159,6 @@ pub struct RunContainerConfig {
 }
 
 #[tauri::command]
-#[allow(deprecated)]
 pub async fn create_and_start_container(
     state: State<'_, DockerConfig>,
     config: RunContainerConfig,
@@ -172,7 +170,9 @@ pub async fn create_and_start_container(
 
     for (host_port, container_port) in config.ports {
         let container_key = format!("{}/tcp", container_port);
+        // Exposed Ports usa um HashMap vazio como valor para indicar "existe"
         exposed_ports.insert(container_key.clone(), HashMap::new());
+
         port_bindings.insert(
             container_key,
             Some(vec![PortBinding {
@@ -193,7 +193,7 @@ pub async fn create_and_start_container(
         ..Default::default()
     };
 
-    let container_config = Config {
+    let container_config = ContainerCreateBody {
         image: Some(config.image),
         exposed_ports: Some(exposed_ports),
         env: Some(envs),
@@ -209,38 +209,20 @@ pub async fn create_and_start_container(
             ..Default::default()
         });
 
-    // 1. CRIAÇÃO
     let create_res = docker
         .create_container(options, container_config)
         .await
         .map_err(|e| format!("Erro ao criar: {}", e))?;
 
-    // 2. TENTATIVA DE START COM ROLLBACK
-    if let Err(start_err) = docker
+    docker
         .start_container(&create_res.id, None::<StartContainerOptions>)
         .await
-    {
-        // Opa! Falhou ao iniciar (provavelmente porta em uso).
-        // Vamos limpar a sujeira deletando o container criado.
-        let remove_opts = Some(RemoveContainerOptions {
-            force: true,
-            ..Default::default()
-        });
-
-        // Tentamos remover. Se falhar a remoção, não temos muito o que fazer além de logar.
-        if let Err(rm_err) = docker.remove_container(&create_res.id, remove_opts).await {
-            eprintln!(
-                "Falha ao fazer rollback do container {}: {}",
-                create_res.id, rm_err
-            );
-        }
-
-        // Retorna o erro original para o usuário saber que a porta estava em uso
-        return Err(format!(
-            "Falha ao iniciar (Rollback executado): {}",
-            start_err
-        ));
-    }
+        .map_err(|e| {
+            format!(
+                "Container criado ({}), mas falhou ao iniciar: {}",
+                create_res.id, e
+            )
+        })?;
 
     Ok(create_res.id)
 }
