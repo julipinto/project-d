@@ -1,10 +1,11 @@
 import { type Component, createMemo, createSignal, Show } from "solid-js";
 import { createStore } from "solid-js/store";
-import { Play, Terminal, ChevronDown, ChevronUp, Loader2 } from "lucide-solid";
+import { Play, Terminal, ChevronDown, ChevronUp, Loader2, FolderOpen } from "lucide-solid";
 import toast from "solid-toast";
 import { type RunConfig, useRunContainer } from "../../hooks/use-run-container";
 import { DynamicList } from "../../../../ui/dynamic-list";
 import { Modal } from "../../../../ui/modal";
+import { open as openDialog } from "@tauri-apps/plugin-dialog";
 
 interface Props {
   isOpen: boolean;
@@ -23,11 +24,12 @@ export const RunContainerModal: Component<Props> = (props) => {
     name: "",
     ports: [],
     env: [],
+    mounts: [],
   });
 
   // Reset ao abrir
   const reset = () => {
-    setForm({ image: props.initialImage || "", name: "", ports: [], env: [] });
+    setForm({ image: props.initialImage || "", name: "", ports: [], env: [], mounts: [] });
     setShowAdvanced(false);
   };
 
@@ -43,6 +45,10 @@ export const RunContainerModal: Component<Props> = (props) => {
 
     form.env.forEach((e) => {
       if (e.key) parts.push(`-e ${e.key}=${e.value}`);
+    });
+
+    form.mounts.forEach((m) => {
+      if (m.hostPath && m.containerPath) parts.push(`-v ${m.hostPath}:${m.containerPath}`);
     });
 
     parts.push(form.image || "<imagem>");
@@ -63,6 +69,22 @@ export const RunContainerModal: Component<Props> = (props) => {
       toast.error(String(e));
     } finally {
       setIsRunning(false);
+    }
+  };
+
+  const handleBrowseHostPath = async (index: number) => {
+    try {
+      const selected = await openDialog({
+        directory: true,
+        multiple: false,
+        title: "Selecione a pasta do Host",
+      });
+
+      if (selected && typeof selected === "string") {
+        setForm("mounts", index, "hostPath", selected);
+      }
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -191,6 +213,43 @@ export const RunContainerModal: Component<Props> = (props) => {
                   onInput={(e) => setForm("env", i, "value", e.currentTarget.value)}
                 />
               </>
+            )}
+          />
+
+          <DynamicList
+            label="Volumes (Bind Mounts)"
+            items={form.mounts}
+            onAdd={() => setForm("mounts", [...form.mounts, { hostPath: "", containerPath: "" }])}
+            onRemove={(i) => setForm("mounts", (m) => m.filter((_, idx) => idx !== i))}
+            emptyText="Nenhum volume montado."
+            renderItem={(item, i) => (
+              <div class="col-span-2 grid grid-cols-2 gap-2">
+                {" "}
+                {/* Layout customizado para caber o botão */}
+                {/* Input do Host com Botão de Pasta */}
+                <div class="relative flex items-center">
+                  <input
+                    placeholder="Caminho no Host (/home/...)"
+                    class="bg-black/20 border border-neutral-700 rounded-l px-2 py-1 text-sm text-white w-full pr-8"
+                    value={item.hostPath}
+                    onInput={(e) => setForm("mounts", i, "hostPath", e.currentTarget.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleBrowseHostPath(i)}
+                    class="absolute right-0 h-full px-2 bg-neutral-800 hover:bg-neutral-700 border-y border-r border-neutral-700 rounded-r text-neutral-400 hover:text-white transition-colors"
+                    title="Selecionar Pasta"
+                  >
+                    <FolderOpen class="w-3 h-3" />
+                  </button>
+                </div>
+                <input
+                  placeholder="No Container (/data)"
+                  class="bg-black/20 border border-neutral-700 rounded px-2 py-1 text-sm text-white w-full"
+                  value={item.containerPath}
+                  onInput={(e) => setForm("mounts", i, "containerPath", e.currentTarget.value)}
+                />
+              </div>
             )}
           />
         </div>

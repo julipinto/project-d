@@ -156,6 +156,7 @@ pub struct RunContainerConfig {
     name: Option<String>,
     ports: Vec<(String, String)>,
     env: Vec<(String, String)>,
+    mounts: Vec<(String, String)>,
 }
 
 #[tauri::command]
@@ -188,8 +189,15 @@ pub async fn create_and_start_container(
         .map(|(k, v)| format!("{}={}", k, v))
         .collect();
 
+    let binds: Vec<String> = config
+        .mounts
+        .iter()
+        .map(|(host_path, container_path)| format!("{}:{}", host_path, container_path))
+        .collect();
+
     let host_config = HostConfig {
         port_bindings: Some(port_bindings),
+        binds: Some(binds),
         ..Default::default()
     };
 

@@ -11,11 +11,17 @@ export interface EnvVar {
   value: string;
 }
 
+export interface VolumeMount {
+  hostPath: string;
+  containerPath: string;
+}
+
 export interface RunConfig {
   image: string;
   name: string;
   ports: PortMapping[];
   env: EnvVar[];
+  mounts: VolumeMount[];
 }
 
 export function useRunContainer() {
@@ -28,6 +34,7 @@ export function useRunContainer() {
       name: config.name || null,
       ports: config.ports.map((p) => [p.host, p.container]),
       env: config.env.map((e) => [e.key, e.value]),
+      mounts: config.mounts.map((m) => [m.hostPath, m.containerPath]),
     };
 
     await dockerInvoke("create_and_start_container", { config: payload });
