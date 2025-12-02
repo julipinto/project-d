@@ -3,6 +3,7 @@ import { Package, Trash2, Loader2, Calendar, HardDrive } from "lucide-solid";
 import type { ImageSummary } from "../types";
 import { useImageActions } from "../hooks/use-image-actions";
 import { formatBytes, formatTimeAgo } from "../../../utils/format";
+import { Button } from "../../../ui/button";
 
 interface Props {
   image: ImageSummary;
@@ -98,17 +99,19 @@ export const ImageItemRow: Component<Props> = (props) => {
 
       {/* Ações */}
       <td class="p-4 text-right align-top pt-4">
-        <button
-          type="button"
-          class="p-2 hover:bg-red-900/20 rounded-lg text-neutral-500 hover:text-red-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          title="Remover Imagem"
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={handleDelete}
           disabled={isDeleting()}
+          title="Remover Imagem"
+          // Cores de perigo
+          class="text-neutral-500 hover:text-red-400 hover:bg-red-900/20"
         >
           <Show when={!isDeleting()} fallback={<Loader2 class="w-4 h-4 animate-spin" />}>
             <Trash2 class="w-4 h-4" />
           </Show>
-        </button>
+        </Button>
       </td>
     </tr>
   );

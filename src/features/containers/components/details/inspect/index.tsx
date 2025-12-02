@@ -5,6 +5,7 @@ import { useContainerInspect } from "../../../hooks/use-container-inspect";
 // Imports dos subcomponentes
 import { FormattedView } from "./formatted-view";
 import { JsonViewer } from "./json-viewer";
+import { Button } from "../../../../../ui/button";
 
 interface Props {
   containerId: string;
@@ -27,13 +28,14 @@ export const InspectView: Component<Props> = (props) => {
           </span>
         </div>
 
-        <button
-          type="button"
+        <Button
+          variant="outline"
+          size="sm"
           onClick={() => setShowRaw(!showRaw())}
-          class="text-xs bg-neutral-800 hover:bg-neutral-700 text-neutral-300 px-3 py-1.5 rounded transition-colors border border-neutral-700 font-medium"
+          class="bg-neutral-800 border-neutral-700 text-neutral-300 hover:bg-neutral-700"
         >
           {showRaw() ? "Ver Formatado" : "Ver JSON Puro"}
-        </button>
+        </Button>
       </div>
 
       {/* Área de Conteúdo */}

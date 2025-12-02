@@ -2,6 +2,7 @@ import { Play, Square, LoaderCircle, Trash2, EllipsisVertical } from "lucide-sol
 import { createSignal, Show } from "solid-js";
 import type { ContainerSummary } from "../../../types";
 import { useContainerActions } from "../../../hooks/use-container-actions";
+import { Button } from "../../../../../ui/button";
 
 interface Props {
   container: ContainerSummary;
@@ -59,31 +60,34 @@ export function ActionsCell(props: Props) {
 
   return (
     <div class="flex items-center justify-end gap-2">
-      {/* Toggle Button */}
-      <button
-        type="button"
+      {/* Botão Start/Stop */}
+      <Button
+        variant="ghost"
+        size="icon"
         onClick={handleToggle}
         disabled={isLoading()}
-        class={`
-          p-2 rounded-lg transition-all border border-transparent disabled:opacity-50
-          ${isRunning ? "text-neutral-400 hover:text-amber-400 hover:bg-amber-500/10" : "text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10"}
-        `}
         title={isRunning ? "Parar" : "Iniciar"}
+        class={
+          isRunning
+            ? "text-neutral-400 hover:text-amber-400 hover:bg-amber-500/10"
+            : "text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10"
+        }
       >
         <Show when={!isLoading()} fallback={<LoaderCircle class="w-4 h-4 animate-spin" />}>
           <Show when={isRunning} fallback={<Play class="w-4 h-4 fill-current" />}>
             <Square class="w-4 h-4 fill-current" />
           </Show>
         </Show>
-      </button>
+      </Button>
 
-      {/* Delete Button */}
-      <button
-        type="button"
+      {/* Botão Deletar */}
+      <Button
+        variant="ghost"
+        size="icon"
         onClick={handleDelete}
         disabled={isLoading()}
-        class="p-2 rounded-lg text-neutral-500 hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50"
         title="Remover"
+        class="text-neutral-500 hover:text-red-400 hover:bg-red-500/10"
       >
         <Show
           when={localAction() !== "delete"}
@@ -91,15 +95,16 @@ export function ActionsCell(props: Props) {
         >
           <Trash2 class="w-4 h-4" />
         </Show>
-      </button>
+      </Button>
 
-      {/* Menu Button */}
-      <button
-        type="button"
-        class="p-2 hover:bg-neutral-800 rounded text-neutral-600 hover:text-white transition-colors"
+      {/* Botão Menu */}
+      <Button
+        variant="ghost"
+        size="icon"
+        class="text-neutral-600 hover:text-white hover:bg-neutral-800"
       >
         <EllipsisVertical class="w-4 h-4" />
-      </button>
+      </Button>
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { type Component, For } from "solid-js";
 import { Copy } from "lucide-solid";
 import { Section, InfoGrid, InfoItem } from "./layout-helpers";
 import type { ContainerInspectInfo } from "../../../types";
+import { Button } from "../../../../../ui/button";
 
 interface Props {
   data: ContainerInspectInfo | undefined;
@@ -102,14 +103,15 @@ export const FormattedView: Component<Props> = (props) => {
                       {value}
                     </span>
                   </div>
-                  <button
-                    type="button"
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     onClick={() => copyToClipboard(value)}
-                    class="opacity-0 group-hover:opacity-100 p-2 hover:bg-neutral-800 rounded text-neutral-500 hover:text-white transition-opacity shrink-0"
+                    class="opacity-0 group-hover:opacity-100 shrink-0 h-7 w-7 text-neutral-500 hover:text-white"
                     title="Copiar Valor"
                   >
-                    <Copy class="w-4 h-4" />
-                  </button>
+                    <Copy class="w-3.5 h-3.5" />
+                  </Button>
                 </div>
               );
             }}

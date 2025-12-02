@@ -2,6 +2,7 @@ import { Power, Activity, Settings, AlertTriangle, Globe, ServerCrash } from "lu
 import { Show } from "solid-js";
 import { useUIStore } from "../../../stores/ui-store";
 import { useDockerContextActions } from "../../settings/hooks/use-docker-context-actions";
+import { Button } from "../../../ui/button";
 
 interface Props {
   onTurnOn: () => void;
@@ -66,29 +67,29 @@ export function DockerOffScreen(props: Props) {
         {/* Ações (Botões) */}
         <div class="flex flex-col gap-3 w-full">
           {/* Botão Principal (Start) */}
+          {/* Botão Iniciar */}
           <Show when={canTryAutoStart()}>
-            <button
-              type="button"
+            <Button
               onClick={props.onTurnOn}
               disabled={props.pendingAction !== null}
-              class="group relative flex items-center justify-center w-full px-4 py-2.5 font-semibold text-sm text-white transition-all duration-200 bg-blue-600 rounded-lg hover:bg-blue-500 disabled:opacity-50 shadow-lg shadow-blue-900/20 active:scale-[0.98]"
+              class="w-full shadow-lg shadow-blue-900/20"
             >
-              <Show when={isLoading()} fallback={<Power class="w-4 h-4 mr-2" />}>
-                <Activity class="w-4 h-4 mr-2 animate-spin" />
+              <Show when={isLoading()} fallback={<Power class="w-4 h-4" />}>
+                <Activity class="w-4 h-4 animate-spin" />
               </Show>
               {isLoading() ? "Tentando iniciar..." : "Iniciar Serviço Local"}
-            </button>
+            </Button>
           </Show>
 
-          {/* Botão Secundário (Settings) */}
-          <button
-            type="button"
+          {/* Botão Settings */}
+          <Button
+            variant="outline"
             onClick={() => setActiveView("settings")}
-            class="flex items-center justify-center w-full px-4 py-2.5 font-medium text-sm text-neutral-400 transition-all duration-200 bg-transparent hover:bg-neutral-800/50 rounded-lg hover:text-white border border-neutral-800 hover:border-neutral-700 active:scale-[0.98]"
+            class="w-full bg-neutral-800 border-neutral-700 text-neutral-300 hover:bg-neutral-700 hover:text-white"
           >
-            <Settings class="w-4 h-4 mr-2" />
+            <Settings class="w-4 h-4" />
             Gerenciar Conexões
-          </button>
+          </Button>
         </div>
       </div>
     </div>

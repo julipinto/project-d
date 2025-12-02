@@ -2,7 +2,6 @@ import { type Component, createSignal, Show } from "solid-js";
 import { Play, ChevronDown, ChevronUp, Loader2 } from "lucide-solid";
 import toast from "solid-toast";
 import { useRunContainer } from "../../hooks/use-run-container";
-import { Modal } from "../../../../ui/modal";
 
 // Imports Locais
 import { createRunForm } from "./form-store";
@@ -12,6 +11,7 @@ import { EnvSection } from "./env-section";
 import { MountsSection } from "./mounts-section";
 import { CommandPreview } from "./command-preview";
 import { Button } from "../../../../ui/button";
+import { Modal } from "../../../../ui/modal";
 
 interface Props {
   isOpen: boolean;
@@ -50,14 +50,16 @@ export const RunContainerModal: Component<Props> = (props) => {
       maxWidth="max-w-2xl"
       footer={
         <div class="flex justify-between w-full items-center">
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             type="button"
             onClick={() => setShowAdvanced(!showAdvanced())}
-            class="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1"
+            class="text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 h-auto py-1 px-2"
           >
             {showAdvanced() ? <ChevronUp class="w-3 h-3" /> : <ChevronDown class="w-3 h-3" />}
             {showAdvanced() ? "Menos opções" : "Opções avançadas"}
-          </button>
+          </Button>
           <div class="flex gap-2">
             <Button variant="ghost" onClick={props.onClose} disabled={isRunning()}>
               Cancelar

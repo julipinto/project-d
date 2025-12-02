@@ -152,6 +152,7 @@ export const PullImageModal: Component<Props> = (props) => {
           >
             Cancelar
           </button>
+
           <button
             type="button"
             onClick={handlePull}

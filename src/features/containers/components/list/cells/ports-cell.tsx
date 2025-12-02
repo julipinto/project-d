@@ -3,20 +3,22 @@ import { ExternalLink, ChevronDown } from "lucide-solid";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import type { ContainerSummary, PortInfo } from "../../../types";
 import { Popover, PopoverContent, PopoverTrigger } from "../../../../../ui/popover";
+import { Button } from "../../../../../ui/button";
 
 const MAX_VISIBLE_PORTS = 1;
 const PortButton: Component<{ port: PortInfo; onClick: () => void }> = (props) => (
-  <button
-    type="button"
+  <Button
+    variant="outline"
+    size="sm"
     onClick={props.onClick}
-    class="group/link flex items-center gap-1.5 text-xs font-mono bg-neutral-900 hover:bg-blue-900/30 border border-neutral-800 hover:border-blue-800 px-2 py-1 rounded transition-colors text-neutral-400 hover:text-blue-300 w-full max-w-[140px]"
     title={`Abrir localhost:${props.port.PublicPort}`}
+    class="group w-full max-w-[140px] justify-between bg-neutral-900 border-neutral-800 text-neutral-400 hover:bg-blue-900/30 hover:border-blue-800 hover:text-blue-300 font-mono px-2"
   >
     <span class="truncate">
       {props.port.PublicPort}:{props.port.PrivatePort}
     </span>
-    <ExternalLink class="w-3 h-3 opacity-0 group-hover/link:opacity-100 transition-opacity shrink-0 ml-auto" />
-  </button>
+    <ExternalLink class="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+  </Button>
 );
 
 export function PortsCell(props: { container: ContainerSummary }) {
@@ -59,13 +61,14 @@ export function PortsCell(props: { container: ContainerSummary }) {
         <Popover>
           {/* O Botão que abre */}
           <PopoverTrigger>
-            <button
-              type="button"
-              class="flex items-center gap-1 text-xs font-medium px-2 py-1 rounded transition-colors border bg-neutral-900 text-neutral-500 border-neutral-800 hover:bg-neutral-800 hover:text-neutral-400"
+            <Button
+              variant="outline"
+              size="sm"
+              class="bg-neutral-900 border-neutral-800 text-neutral-500 hover:bg-neutral-800 hover:text-neutral-400 gap-1 px-2"
             >
               <span>+{hiddenPorts.length} portas</span>
               <ChevronDown class="w-3 h-3" />
-            </button>
+            </Button>
           </PopoverTrigger>
 
           <PopoverContent class="p-2 bg-[#1a1d24] border border-neutral-700 rounded-lg shadow-2xl flex flex-col gap-1.5 min-w-[160px] max-h-[300px] overflow-y-auto custom-scrollbar animate-in fade-in zoom-in-95 duration-100">

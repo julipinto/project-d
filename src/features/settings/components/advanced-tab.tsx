@@ -2,6 +2,7 @@ import { type Component, For, Show } from "solid-js";
 import { Server, FolderOpen, Unplug, Check, Terminal } from "lucide-solid";
 import { useDockerContextActions } from "../hooks/use-docker-context-actions";
 import { useDockerContexts } from "../hooks/use-docker-context";
+import { Button } from "../../../ui/button";
 
 export const AdvancedTab: Component = () => {
   const { contexts } = useDockerContexts();
@@ -28,17 +29,17 @@ export const AdvancedTab: Component = () => {
               const isAppConnected = () => endpoint.trim() === activeConnection().trim();
 
               return (
-                <button
-                  type="button"
+                <Button
                   onClick={() => applyContext(endpoint)}
+                  variant="outline"
                   class={`
-                    w-full flex items-center justify-between p-3 border rounded-lg transition-all text-left group relative
-                    ${
-                      isAppConnected()
-                        ? "bg-blue-500/10 border-blue-500/50 shadow-[0_0_15px_rgba(59,130,246,0.1)]"
-                        : "bg-black/20 border-neutral-800 hover:bg-white/5 hover:border-neutral-700"
-                    }
-                  `}
+    w-full h-auto p-3 justify-between items-center font-normal group
+    ${
+      isAppConnected()
+        ? "bg-blue-500/10 border-blue-500/50 shadow-[0_0_15px_rgba(59,130,246,0.1)]"
+        : "bg-black/20 border-neutral-800 hover:bg-white/5 hover:border-neutral-700"
+    }
+  `}
                 >
                   <div class="flex items-center gap-3">
                     <div
@@ -80,7 +81,7 @@ export const AdvancedTab: Component = () => {
                       </div>
                     </Show>
                   </div>
-                </button>
+                </Button>
               );
             }}
           </For>
@@ -110,24 +111,25 @@ export const AdvancedTab: Component = () => {
             />
           </div>
 
-          {/* Botão de Explorador de Arquivos */}
-          <button
-            type="button"
+          {/* Botão Folder */}
+          <Button
+            variant="outline"
+            size="icon"
             onClick={browseSocketFile}
-            class="p-2.5 bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 rounded-lg text-neutral-300 transition-colors"
+            class="bg-neutral-800 border-neutral-700 text-neutral-300 hover:bg-neutral-700 hover:text-white"
             title="Procurar arquivo .sock"
           >
             <FolderOpen class="w-5 h-5" />
-          </button>
+          </Button>
 
           {/* Botão Conectar */}
-          <button
-            type="button"
+          <Button
+            variant="default"
             onClick={handleConnectClick}
-            class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg transition-colors shadow-lg shadow-blue-900/20"
+            class="shadow-lg shadow-blue-900/20"
           >
             Conectar
-          </button>
+          </Button>
         </div>
       </section>
     </div>

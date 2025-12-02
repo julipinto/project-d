@@ -1,6 +1,7 @@
 import { Box } from "lucide-solid";
 import { useUIStore } from "../../../../../stores/ui-store";
 import type { ContainerSummary } from "../../../types";
+import { Button } from "../../../../../ui/button";
 
 interface Props {
   container: ContainerSummary;
@@ -23,14 +24,14 @@ export function IdentityCell(props: Props) {
           )}
         </div>
         <div class="flex flex-col min-w-0">
-          <button
-            type="button"
+          <Button
+            variant="link"
             onClick={() => setSelectedContainerId(props.container.Id)}
-            class="font-medium text-sm text-neutral-200 hover:text-blue-400 transition-colors text-left truncate hover:underline decoration-blue-500/50 decoration-2 underline-offset-2"
             title={props.container.Names[0] || "Sem Nome"}
+            class="h-auto p-0 justify-start font-medium text-neutral-200 hover:text-blue-400 hover:no-underline truncate max-w-full"
           >
             {name}
-          </button>
+          </Button>
           <div class="flex items-center gap-1.5 mt-0.5">
             <span class="text-[10px] text-neutral-500 font-mono select-all">{shortId}</span>
           </div>

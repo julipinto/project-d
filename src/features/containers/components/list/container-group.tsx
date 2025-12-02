@@ -3,6 +3,7 @@ import { ChevronRight, ChevronDown, Layers, Play, Square, Loader2 } from "lucide
 import type { ContainerSummary } from "../../types";
 import { ContainerItemRow } from "./container-item-row";
 import { useContainerActions } from "../../hooks/use-container-actions";
+import { Button } from "../../../../ui/button";
 
 interface Props {
   name: string;
@@ -79,26 +80,25 @@ export function ContainerGroup(props: Props) {
             </div>
 
             <div class="flex items-center gap-1">
-              <button
-                type="button"
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={handleToggleClick}
                 disabled={!!isActionLoading()}
                 title={isAllRunning() ? "Parar Stack Inteira" : "Iniciar Stack Inteira"}
-                class={`
-                        p-2 rounded-lg transition-all border border-transparent
-                        ${
-                          isAllRunning()
-                            ? "text-neutral-500 hover:text-red-400 hover:bg-red-500/10"
-                            : "text-neutral-500 hover:text-emerald-400 hover:bg-emerald-500/10"
-                        }
-                    `}
+                // O override de cores entra aqui
+                class={
+                  isAllRunning()
+                    ? "text-neutral-500 hover:text-red-400 hover:bg-red-500/10"
+                    : "text-neutral-500 hover:text-emerald-400 hover:bg-emerald-500/10"
+                }
               >
                 <Show when={!isActionLoading()} fallback={<Loader2 class="w-4 h-4 animate-spin" />}>
                   <Show when={isAllRunning()} fallback={<Play class="w-4 h-4 fill-current" />}>
                     <Square class="w-4 h-4 fill-current" />
                   </Show>
                 </Show>
-              </button>
+              </Button>
             </div>
           </div>
         </td>

@@ -3,6 +3,7 @@ import { Database, Trash2, Loader2, FolderOpen, Clock } from "lucide-solid";
 import type { Volume } from "../types";
 import { useVolumeActions } from "../hooks/use-volume-actions";
 import { formatTimeAgo } from "../../../utils/format";
+import { Button } from "../../../ui/button";
 
 interface Props {
   volume: Volume;
@@ -78,17 +79,18 @@ export const VolumeItemRow: Component<Props> = (props) => {
 
       {/* Ações */}
       <td class="p-4 text-right align-top pt-4">
-        <button
-          type="button"
-          class="p-2 hover:bg-red-900/20 rounded-lg text-neutral-500 hover:text-red-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          title="Remover Volume"
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={handleDelete}
           disabled={isDeleting()}
+          title="Remover Volume"
+          class="text-neutral-500 hover:text-red-400 hover:bg-red-900/20"
         >
           <Show when={!isDeleting()} fallback={<Loader2 class="w-4 h-4 animate-spin" />}>
             <Trash2 class="w-4 h-4" />
           </Show>
-        </button>
+        </Button>
       </td>
     </tr>
   );

@@ -1,6 +1,7 @@
 import { type Component, Show } from "solid-js";
 import { ArrowLeft, Box } from "lucide-solid";
 import { useContainerInspect } from "../../hooks/use-container-inspect";
+import { Button } from "../../../../ui/button";
 
 interface Props {
   containerId: string;
@@ -17,14 +18,9 @@ export const DetailsHeader: Component<Props> = (props) => {
   return (
     <div class="flex items-center justify-between border-b border-neutral-800 pb-4 mb-4">
       <div class="flex items-center gap-4">
-        <button
-          type="button"
-          onClick={props.onBack}
-          class="p-2 hover:bg-neutral-800 rounded-lg text-neutral-400 hover:text-white transition-colors"
-          title="Voltar para a lista"
-        >
+        <Button variant="ghost" size="icon" onClick={props.onBack} title="Voltar para a lista">
           <ArrowLeft class="w-5 h-5" />
-        </button>
+        </Button>
 
         <div>
           <div class="flex items-center gap-3">

@@ -1,5 +1,6 @@
 import { For, type JSX } from "solid-js";
 import { Plus, Trash2 } from "lucide-solid";
+import { Button } from "../button";
 
 interface Props<T> {
   items: T[];
@@ -17,14 +18,15 @@ export function DynamicList<T>(props: Props<T>) {
         <label for="add-item" class="text-xs font-bold text-neutral-500 uppercase tracking-wider">
           {props.label}
         </label>
-        <button
+        <Button
           id="add-item"
-          type="button"
+          variant="ghost"
+          size="sm" // Pequeno
           onClick={props.onAdd}
-          class="text-xs flex items-center gap-1 text-blue-400 hover:text-blue-300 transition-colors"
+          class="text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 h-auto py-1"
         >
           <Plus class="w-3 h-3" /> Adicionar
-        </button>
+        </Button>
       </div>
 
       <div class="space-y-2">
@@ -39,13 +41,14 @@ export function DynamicList<T>(props: Props<T>) {
           {(item, index) => (
             <div class="flex gap-2 items-start animate-in fade-in slide-in-from-left-2 duration-200">
               <div class="flex-1 grid grid-cols-2 gap-2">{props.renderItem(item, index())}</div>
-              <button
-                type="button"
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={() => props.onRemove(index())}
-                class="p-2 text-neutral-500 hover:text-red-400 hover:bg-neutral-800 rounded transition-colors"
+                class="text-neutral-500 hover:text-red-400 hover:bg-neutral-800"
               >
                 <Trash2 class="w-4 h-4" />
-              </button>
+              </Button>
             </div>
           )}
         </For>

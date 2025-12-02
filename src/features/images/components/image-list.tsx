@@ -5,6 +5,7 @@ import { ImageItemRow } from "./image-item-row";
 import { createDebouncedSignal } from "../../../utils/debounce";
 import { SearchInput } from "../../../ui/search-input";
 import { PullImageModal } from "./pull-modal";
+import { Button } from "../../../ui/button";
 
 export function ImageList() {
   // 1. Configura o estado da busca com debounce
@@ -34,14 +35,10 @@ export function ImageList() {
               placeholder="Buscar imagem por tag ou ID..."
             />
 
-            <button
-              type="button"
-              onClick={() => setIsPullModalOpen(true)}
-              class="flex items-center gap-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg transition-colors shadow-lg shadow-blue-900/20"
-            >
+            <Button onClick={() => setIsPullModalOpen(true)} class="shadow-lg shadow-blue-900/20">
               <Download class="w-4 h-4" />
               <span class="hidden sm:inline">Pull Image</span>
-            </button>
+            </Button>
 
             {/* Status Pill */}
             <div class="flex items-center gap-2 text-xs font-mono bg-neutral-900 px-3 py-1.5 rounded border border-neutral-800 text-neutral-400 whitespace-nowrap">
