@@ -4,27 +4,27 @@ use tauri::{AppHandle, State};
 
 #[tauri::command]
 pub async fn open_terminal(
-    app: AppHandle,
-    state: State<'_, ShellManager>,
-    docker_state: State<'_, DockerConfig>,
-    id: String,
+  app: AppHandle,
+  state: State<'_, ShellManager>,
+  docker_state: State<'_, DockerConfig>,
+  id: String,
 ) -> Result<(), String> {
-    state.open_session(app, docker_state, id).await
+  state.open_session(app, docker_state, id).await
 }
 
 #[tauri::command]
 pub async fn write_terminal(
-    state: State<'_, ShellManager>,
-    id: String,
-    data: String,
+  state: State<'_, ShellManager>,
+  id: String,
+  data: String,
 ) -> Result<(), String> {
-    state.write_to_session(id, data).await;
-    Ok(())
+  state.write_to_session(id, data).await;
+  Ok(())
 }
 
 #[tauri::command]
 pub async fn resize_terminal(_id: String, _rows: u16, _cols: u16) -> Result<(), String> {
-    // Implementação futura: Redimensionar o TTY do Docker
-    // O Bollard tem suporte a resize_exec, podemos adicionar depois
-    Ok(())
+  // Implementação futura: Redimensionar o TTY do Docker
+  // O Bollard tem suporte a resize_exec, podemos adicionar depois
+  Ok(())
 }
