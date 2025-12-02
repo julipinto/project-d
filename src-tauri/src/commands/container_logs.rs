@@ -1,15 +1,11 @@
-use crate::services::docker::{self, DockerConfig};
+use crate::services::docker;
 use bollard::query_parameters::LogsOptions;
 use futures_util::stream::StreamExt;
-use tauri::{AppHandle, Emitter, State};
+use tauri::{AppHandle, Emitter};
 
 #[tauri::command]
-pub async fn stream_container_logs(
-    app: AppHandle,
-    state: State<'_, DockerConfig>,
-    id: String,
-) -> Result<(), String> {
-    let docker = docker::connect(&state)?;
+pub async fn stream_container_logs(app: AppHandle, id: String) -> Result<(), String> {
+    let docker = docker::connect()?;
 
     let options = Some(LogsOptions {
         follow: true,
@@ -23,16 +19,23 @@ pub async fn stream_container_logs(
 
     tauri::async_runtime::spawn(async move {
         let event_name = format!("log-stream://{}", id);
+
         while let Some(log_result) = stream.next().await {
-            if let Ok(log_output) = log_result {
-                let payload = log_output.to_string();
-                if app.emit(&event_name, payload).is_err() {
+            match log_result {
+                Ok(log_output) => {
+                    let payload = log_output.to_string();
+
+                    if app.emit(&event_name, payload).is_err() {
+                        break;
+                    }
+                }
+                Err(e) => {
+                    eprintln!("Erro no stream de logs: {}", e);
                     break;
                 }
-            } else {
-                break;
             }
         }
     });
+
     Ok(())
 }
