@@ -1,4 +1,4 @@
-import { type Component, createSignal, Show } from "solid-js";
+import { type Component, createEffect, createSignal, Show } from "solid-js";
 import { Play, ChevronDown, ChevronUp, Loader2 } from "lucide-solid";
 import toast from "solid-toast";
 import { useRunContainer } from "../../hooks/use-run-container";
@@ -26,6 +26,13 @@ export const RunContainerModal: Component<Props> = (props) => {
 
   // Usa a lógica extraída
   const { form, setForm, reset, addItem, removeItem } = createRunForm(props.initialImage);
+
+  // Efeito para atualizar o formulário quando o modal abre com uma nova imagem
+  createEffect(() => {
+    if (props.isOpen && props.initialImage) {
+      setForm("image", props.initialImage);
+    }
+  });
 
   const handleSubmit = async () => {
     if (!form.image) return;

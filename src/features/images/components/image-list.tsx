@@ -6,17 +6,27 @@ import { createDebouncedSignal } from "../../../utils/debounce";
 import { SearchInput } from "../../../ui/search-input";
 import { PullImageModal } from "./pull-modal";
 import { Button } from "../../../ui/button";
+import { RunContainerModal } from "../../containers/components/run-container-modal";
 
 export function ImageList() {
   // 1. Configura o estado da busca com debounce
   const [isPullModalOpen, setIsPullModalOpen] = createSignal(false);
   const [inputValue, setInputValue, searchQuery] = createDebouncedSignal("", 300);
+  const [imageToRun, setImageToRun] = createSignal<string | null>(null);
   // 2. Passa o sinal de busca para o hook
   const query = useImages(searchQuery);
 
   return (
     <>
       <PullImageModal isOpen={isPullModalOpen()} onClose={() => setIsPullModalOpen(false)} />
+
+      <Show when={imageToRun()}>
+        <RunContainerModal
+          isOpen={true}
+          onClose={() => setImageToRun(null)}
+          initialImage={imageToRun() || undefined}
+        />
+      </Show>
       <div class="space-y-6 pb-12">
         {/* Header */}
         <div class="flex justify-between items-end border-b border-neutral-800 pb-4 gap-4">
@@ -63,7 +73,18 @@ export function ImageList() {
               </tr>
             </thead>
             <tbody class="divide-y divide-neutral-800/50 text-sm">
-              <For each={query.data}>{(img) => <ImageItemRow image={img} />}</For>
+              <For each={query.data}>
+                {(img) => (
+                  <ImageItemRow
+                    image={img}
+                    onRun={() => {
+                      const tag =
+                        img.RepoTags?.[0] || img.Id.replace("sha256:", "").substring(0, 12);
+                      setImageToRun(tag);
+                    }}
+                  />
+                )}
+              </For>
 
               {/* Estado Vazio / Buscando */}
               <Show when={query.data?.length === 0}>

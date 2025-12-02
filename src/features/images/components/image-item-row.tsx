@@ -1,5 +1,5 @@
 import { type Component, createSignal, Show, For } from "solid-js";
-import { Package, Trash2, Loader2, Calendar, HardDrive } from "lucide-solid";
+import { Package, Trash2, Loader2, Calendar, HardDrive, Play } from "lucide-solid";
 import type { ImageSummary } from "../types";
 import { useImageActions } from "../hooks/use-image-actions";
 import { formatBytes, formatTimeAgo } from "../../../utils/format";
@@ -7,6 +7,7 @@ import { Button } from "../../../ui/button";
 
 interface Props {
   image: ImageSummary;
+  onRun: () => void;
 }
 
 export const ImageItemRow: Component<Props> = (props) => {
@@ -99,6 +100,16 @@ export const ImageItemRow: Component<Props> = (props) => {
 
       {/* Ações */}
       <td class="p-4 text-right align-top pt-4">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={props.onRun}
+          title={`Rodar ${mainTag()}`}
+          class="text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10"
+        >
+          <Play class="w-4 h-4 fill-current" />
+        </Button>
+
         <Button
           variant="ghost"
           size="icon"
