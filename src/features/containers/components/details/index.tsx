@@ -3,8 +3,8 @@ import { FileText, Activity, Info, TerminalIcon } from "lucide-solid";
 
 // 2. Componentes da Feature
 import { DetailsHeader } from "./details-header";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../../ui/tabs";
 import { useUIStore } from "../../../../stores/ui-store";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../../ui/tabs/tabs";
 
 const LogsTerminal = lazy(() =>
   import("./logs/logs-terminal").then((m) => ({ default: m.LogsTerminal })),

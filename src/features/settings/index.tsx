@@ -2,11 +2,11 @@ import type { Component } from "solid-js";
 import { Settings } from "lucide-solid";
 
 // UI Imports
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/tabs";
 
 // Tab Components Imports
 import { GeneralTab } from "./components/general-tab";
 import { AdvancedTab } from "./components/advanced-tab";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/tabs/tabs";
 
 export const SettingsPage: Component = () => {
   return (
