@@ -9,35 +9,35 @@ import globalEn from "./locales/global/en";
 import globalEs from "./locales/global/es";
 import globalFr from "./locales/global/fr";
 
-import containersPtBr from "./locales/containers/pt-BR";
-import containersEn from "./locales/containers/en";
-import containersEs from "./locales/containers/es";
-import containersFr from "./locales/containers/fr";
+import containersPtBr from "../features/containers/i18n/locales/pt-BR";
+import containersEn from "../features/containers/i18n/locales/en";
+import containersEs from "../features/containers/i18n/locales/es";
+import containersFr from "../features/containers/i18n/locales/fr";
 
-import imagesPtBr from "./locales/images/pt-BR";
-import imagesEn from "./locales/images/en";
-import imagesEs from "./locales/images/es";
-import imagesFr from "./locales/images/fr";
+import imagesPtBr from "../features/images/i18n/locales/pt-BR";
+import imagesEn from "../features/images/i18n/locales/en";
+import imagesEs from "../features/images/i18n/locales/es";
+import imagesFr from "../features/images/i18n/locales/fr";
 
-import volumesPtBr from "./locales/volumes/pt-BR";
-import volumesEn from "./locales/volumes/en";
-import volumesEs from "./locales/volumes/es";
-import volumesFr from "./locales/volumes/fr";
+import volumesPtBr from "../features/volumes/i18n/locales/pt-BR";
+import volumesEn from "../features/volumes/i18n/locales/en";
+import volumesEs from "../features/volumes/i18n/locales/es";
+import volumesFr from "../features/volumes/i18n/locales/fr";
 
-import networksPtBr from "./locales/networks/pt-BR";
-import networksEn from "./locales/networks/en";
-import networksEs from "./locales/networks/es";
-import networksFr from "./locales/networks/fr";
+import networksPtBr from "../features/networks/i18n/locales/pt-BR";
+import networksEn from "../features/networks/i18n/locales/en";
+import networksEs from "../features/networks/i18n/locales/es";
+import networksFr from "../features/networks/i18n/locales/fr";
 
-import settingsPtBr from "./locales/settings/pt-BR";
-import settingsEn from "./locales/settings/en";
-import settingsEs from "./locales/settings/es";
-import settingsFr from "./locales/settings/fr";
+import settingsPtBr from "../features/settings/i18n/locales/pt-BR";
+import settingsEn from "../features/settings/i18n/locales/en";
+import settingsEs from "../features/settings/i18n/locales/es";
+import settingsFr from "../features/settings/i18n/locales/fr";
 
-import systemPtBr from "./locales/system/pt-BR";
-import systemEn from "./locales/system/en";
-import systemEs from "./locales/system/es";
-import systemFr from "./locales/system/fr";
+import systemPtBr from "../features/system/i18n/locales/pt-BR";
+import systemEn from "../features/system/i18n/locales/en";
+import systemEs from "../features/system/i18n/locales/es";
+import systemFr from "../features/system/i18n/locales/fr";
 
 export type Locale = "pt-BR" | "en" | "es" | "fr";
 
