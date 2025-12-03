@@ -12,4 +12,3 @@ export const _typeCheck: Record<"pt-BR" | "en" | "es" | "fr", ImagesTranslations
   es: imagesEs,
   fr: imagesFr,
 };
-

@@ -12,4 +12,3 @@ export const _typeCheck: Record<"pt-BR" | "en" | "es" | "fr", ContainersTranslat
   es: containersEs,
   fr: containersFr,
 };
-
