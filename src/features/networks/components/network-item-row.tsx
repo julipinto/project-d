@@ -5,6 +5,7 @@ import { useNetworkActions } from "../hooks/use-network-actions";
 import { formatTimeAgo } from "../../../utils/format";
 import { Button } from "../../../ui/button";
 import { useUIStore } from "../../../stores/ui-store";
+import { useI18n } from "../../../i18n";
 
 interface Props {
   network: Network;
@@ -14,6 +15,7 @@ export const NetworkItemRow: Component<Props> = (props) => {
   const { setSelectedNetworkId } = useUIStore();
   const { removeNetwork } = useNetworkActions();
   const [isDeleting, setIsDeleting] = createSignal(false);
+  const { t } = useI18n();
 
   const shortId = props.network.Id.substring(0, 12);
   const subnet = props.network.IPAM?.Config?.[0]?.Subnet || "-";
@@ -22,7 +24,7 @@ export const NetworkItemRow: Component<Props> = (props) => {
     if (isDeleting()) return;
 
     const confirmed = confirm(
-      `Tem certeza que deseja remover a rede "${props.network.Name}"?\nIsso falhará se houver containers conectados.`,
+      t("networks.details.itemRow.deleteConfirm", { name: props.network.Name }),
     );
     if (!confirmed) return;
 
@@ -30,7 +32,7 @@ export const NetworkItemRow: Component<Props> = (props) => {
     try {
       await removeNetwork(props.network.Id);
     } catch (error) {
-      alert(`Erro: ${error}`);
+      alert(String(error));
       setIsDeleting(false);
     }
   };
@@ -71,7 +73,7 @@ export const NetworkItemRow: Component<Props> = (props) => {
           <Show when={props.network.Internal}>
             <span
               class="text-[10px] text-amber-500 border border-amber-500/20 px-1.5 rounded flex items-center gap-1"
-              title="Rede Interna (Sem acesso externo)"
+              title={t("networks.details.itemRow.internalTitle")}
             >
               <Shield class="w-3 h-3" /> Internal
             </span>
@@ -102,7 +104,7 @@ export const NetworkItemRow: Component<Props> = (props) => {
           size="icon"
           onClick={handleDelete}
           disabled={isDeleting()}
-          title="Remover Rede"
+          title={t("networks.details.itemRow.removeTitle")}
           class="text-neutral-500 hover:text-red-400 hover:bg-red-900/20"
         >
           <Show when={!isDeleting()} fallback={<Loader2 class="w-4 h-4 animate-spin" />}>

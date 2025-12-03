@@ -39,14 +39,14 @@ export function useWindowPersistence() {
 
       const monitors = await availableMonitors();
 
-      // Verifica se a posição salva cai dentro de ALGUM monitor conectado
+      // Check if the saved position falls within any connected monitor
       const isPositionValid = monitors.some((m) => {
         const mX = m.position.x;
         const mY = m.position.y;
         const mW = m.size.width;
         const mH = m.size.height;
 
-        // Verifica se o canto superior esquerdo da janela salva está dentro deste monitor
+        // Check if the saved window's top-left corner is inside this monitor
         return saved.x >= mX && saved.x < mX + mW && saved.y >= mY && saved.y < mY + mH;
       });
 
@@ -54,12 +54,12 @@ export function useWindowPersistence() {
         await appWindow.setSize(new PhysicalSize(saved.width, saved.height));
         await appWindow.setPosition(new PhysicalPosition(saved.x, saved.y));
       } else {
-        console.log("Posição salva fora da área visível. Centralizando...");
+        console.log("Saved window position is off-screen. Recentering window...");
         await appWindow.setSize(new PhysicalSize(saved.width, saved.height));
         await appWindow.center();
       }
     } catch (err) {
-      console.error("Falha ao restaurar janela:", err);
+      console.error("Failed to restore window position:", err);
     }
   };
 

@@ -17,6 +17,7 @@ export default {
       loading: "Cargando contenedores...",
       noContainers: "No hay contenedores en ejecución en este momento.",
     },
+    noName: "Sin Nombre",
   },
   details: {
     back: "Volver a la lista",
@@ -24,6 +25,37 @@ export default {
     loading: "Cargando...",
     start: "Iniciar",
     stop: "Detener",
+  },
+  inspect: {
+    basic: {
+      title: "Información Básica",
+      idFull: "ID Completo",
+      image: "Imagen",
+      command: "Comando",
+      status: "Estado",
+      createdAt: "Creado en",
+      platform: "Plataforma",
+    },
+    network: {
+      title: "Red y Puertos",
+      ipAddresses: "Direcciones IP",
+      hostNone: "Host/None",
+      portMapping: "Mapeo de Puertos",
+    },
+    env: {
+      title: "Variables de Entorno ({count})",
+      copyValue: "Copiar Valor",
+    },
+    viewToggle: {
+      jsonRaw: "JSON Bruto",
+      overview: "Visión General",
+      seeFormatted: "Ver Formateado",
+      seeRawJson: "Ver JSON Puro",
+    },
+  },
+  stats: {
+    stoppedTitle: "Contenedor Detenido",
+    stoppedDescription: "Inicia el contenedor para ver estadísticas en tiempo real.",
   },
   runModal: {
     title: "Ejecutar Nuevo Contenedor",
@@ -59,5 +91,12 @@ export default {
     start: "Iniciar",
     stop: "Detener",
     remove: "Eliminar",
+  },
+  mappingRow: {
+    hostPlaceholderPort: "Ej: 8080",
+    hostPlaceholderVolume: "/home/user/proyecto",
+    browseFolder: "Seleccionar Carpeta",
+    containerPlaceholderPort: "Ej: 80",
+    containerPlaceholderVolume: "/app/data",
   },
 };

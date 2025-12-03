@@ -1,14 +1,14 @@
 import { invoke } from "@tauri-apps/api/core";
 import { createSignal } from "solid-js";
 
-// O Estado Global
+// Global Docker connectivity state
 const [isDockerOnline, setIsDockerOnline] = createSignal(true);
 
 export async function dockerInvoke<T>(command: string, args?: Record<string, unknown>): Promise<T> {
   try {
     const result = await invoke<T>(command, args);
 
-    // Se deu sucesso, garantimos que está online
+    // If the call succeeds, make sure we mark Docker as online
     if (!isDockerOnline()) {
       setIsDockerOnline(true);
     }
@@ -19,26 +19,26 @@ export async function dockerInvoke<T>(command: string, args?: Record<string, unk
 
     const errString = String(error).toLowerCase();
 
-    // --- LISTA BRANCA (Erros que NÃO devem derrubar o app) ---
+    // --- Whitelist: business errors that should NOT take the app offline ---
     const nonCriticalErrors = [
-      "port is already allocated", // Porta em uso
-      "address already in use", // Variação de porta em uso
-      "container already exists", // Nome duplicado
-      "no such container", // 404 de container
-      "no such image", // 404 de imagem
-      "conflict", // Erros de conflito genéricos do Docker
-      "container criado", // Nossa mensagem customizada do Rust quando cria mas falha start
+      "port is already allocated", // Port already in use
+      "address already in use", // Port-in-use variation
+      "container already exists", // Duplicate name
+      "no such container", // Container 404
+      "no such image", // Image 404
+      "conflict", // Generic Docker conflict errors
+      "container criado", // Custom Rust message when create succeeds but start fails
     ];
 
-    // Se o erro for um desses, nós APENAS lançamos o erro para a UI mostrar o Toast,
-    // mas NÃO mudamos o isDockerOnline para false.
+    // If the error is one of these, just rethrow so the UI can show a toast,
+    // but do NOT mark Docker as offline.
     const isBusinessError = nonCriticalErrors.some((msg) => errString.includes(msg));
 
     if (isBusinessError) {
       throw error;
     }
 
-    // --- LISTA NEGRA (Erros que indicam queda do sistema) ---
+    // --- Blacklist: errors that indicate a critical connectivity problem ---
     if (
       errString.includes("connect") ||
       errString.includes("socket") ||
@@ -46,7 +46,7 @@ export async function dockerInvoke<T>(command: string, args?: Record<string, unk
       errString.includes("hyper legacy client") ||
       errString.includes("connection refused")
     ) {
-      console.log("[Middleware] Detectado falha crítica de conexão. Mudando para OFFLINE.");
+      console.log("[Middleware] Critical connection failure detected. Switching to OFFLINE state.");
       setIsDockerOnline(false);
     }
 

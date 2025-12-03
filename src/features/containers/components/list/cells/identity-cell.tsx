@@ -2,6 +2,7 @@ import { Box } from "lucide-solid";
 import { useUIStore } from "../../../../../stores/ui-store";
 import type { ContainerSummary } from "../../../types";
 import { Button } from "../../../../../ui/button";
+import { useI18n } from "../../../../../i18n";
 
 interface Props {
   container: ContainerSummary;
@@ -10,8 +11,9 @@ interface Props {
 
 export function IdentityCell(props: Props) {
   const { setSelectedContainerId } = useUIStore();
+  const { t } = useI18n();
   const shortId = props.container.Id.substring(0, 12);
-  const name = props.container.Names[0]?.replace("/", "") || "Sem Nome";
+  const name = props.container.Names[0]?.replace("/", "") || t("containers.list.noName");
 
   return (
     <div class={`flex items-start gap-3 ${props.isNested ? "pl-10" : ""}`}>
@@ -27,7 +29,7 @@ export function IdentityCell(props: Props) {
           <Button
             variant="link"
             onClick={() => setSelectedContainerId(props.container.Id)}
-            title={props.container.Names[0] || "Sem Nome"}
+            title={props.container.Names[0] || t("containers.list.noName")}
             class="font-medium text-sm text-neutral-200 hover:text-blue-400 truncate"
           >
             {name}

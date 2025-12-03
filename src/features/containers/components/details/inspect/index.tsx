@@ -6,6 +6,7 @@ import { useContainerInspect } from "../../../hooks/use-container-inspect";
 import { FormattedView } from "./formatted-view";
 import { JsonViewer } from "./json-viewer";
 import { Button } from "../../../../../ui/button";
+import { useI18n } from "../../../../../i18n";
 
 interface Props {
   containerId: string;
@@ -14,6 +15,7 @@ interface Props {
 export const InspectView: Component<Props> = (props) => {
   const query = useContainerInspect(props.containerId);
   const [showRaw, setShowRaw] = createSignal(false);
+  const { t } = useI18n();
 
   return (
     <div class="h-full flex flex-col bg-[#0d1117] text-sm overflow-hidden">
@@ -24,7 +26,9 @@ export const InspectView: Component<Props> = (props) => {
             <Code class="w-4 h-4 text-amber-500" />
           </Show>
           <span class="font-medium text-neutral-200">
-            {showRaw() ? "JSON Bruto" : "Visão Geral"}
+            {showRaw()
+              ? t("containers.inspect.viewToggle.jsonRaw")
+              : t("containers.inspect.viewToggle.overview")}
           </span>
         </div>
 
@@ -34,7 +38,9 @@ export const InspectView: Component<Props> = (props) => {
           onClick={() => setShowRaw(!showRaw())}
           class="bg-neutral-800 border-neutral-700 text-neutral-300 hover:bg-neutral-700"
         >
-          {showRaw() ? "Ver Formatado" : "Ver JSON Puro"}
+          {showRaw()
+            ? t("containers.inspect.viewToggle.seeFormatted")
+            : t("containers.inspect.viewToggle.seeRawJson")}
         </Button>
       </div>
 
@@ -45,7 +51,7 @@ export const InspectView: Component<Props> = (props) => {
           fallback={
             <div class="h-full flex flex-col items-center justify-center text-neutral-500 gap-3">
               <Loader2 class="w-8 h-8 animate-spin text-blue-500" />
-              <span>Carregando detalhes do container...</span>
+              <span>{t("global.common.loading")}</span>
             </div>
           }
         >

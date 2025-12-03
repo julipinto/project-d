@@ -21,5 +21,15 @@ export default {
     loading: "Carregando detalhes...",
     confirmDelete: 'Tem certeza que deseja remover o volume "{name}"?',
     removed: "Volume removido.",
+    headerTitle: "Informações Gerais",
+    driver: "Driver",
+    createdAt: "Criado em",
+    mountpointTitle: "Mountpoint (Local no Disco)",
+    usedByTitle: "Utilizado por ({count})",
+    usedByEmpty: "Este volume não está conectado a nenhum container no momento.",
+    inspectVolumeTitle: "Inspecionar Volume",
+    removeVolumeTitle: "Remover Volume",
+    itemDeleteConfirm:
+      'Tem certeza que deseja remover o volume "{name}"?\nIsso apagará todos os dados permanentemente.',
   },
 };

@@ -12,7 +12,7 @@ export function useDockerSystem() {
 
   const isToggling = () => pendingAction() !== null;
 
-  // 1. Query de Ping
+  // 1. Ping query
   const query = useQuery(() => ({
     queryKey: SYSTEM_KEY,
     queryFn: async () => {
@@ -31,7 +31,7 @@ export function useDockerSystem() {
     },
   }));
 
-  // 2. Polling de Recuperação
+  // 2. Recovery polling
   createEffect(() => {
     let interval: number | undefined;
 
@@ -40,12 +40,12 @@ export function useDockerSystem() {
         try {
           const isActive = await invoke<boolean>("is_docker_service_active");
           if (isActive) {
-            console.log("✅ SystemD Ativo! Reconectando...");
+            console.log("✅ SystemD active. Reconnecting Docker...");
             await dockerInvoke("ping_docker");
             queryClient.invalidateQueries();
           }
         } catch (_e) {
-          /* silêncio */
+          /* silent retry */
         }
       }, 5000) as unknown as number;
     }
@@ -70,10 +70,10 @@ export function useDockerSystem() {
       setTimeout(async () => {
         await query.refetch();
         await queryClient.invalidateQueries();
-        setPendingAction(null); // Limpa o estado
+        setPendingAction(null);
       }, 3000);
     } catch (err) {
-      alert(`Erro: ${err}`);
+      alert(`Error while managing Docker: ${err}`);
       setPendingAction(null);
       query.refetch();
     }

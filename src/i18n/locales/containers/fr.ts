@@ -17,6 +17,7 @@ export default {
       loading: "Chargement des conteneurs...",
       noContainers: "Aucun conteneur en cours d'exécution pour le moment.",
     },
+    noName: "Sans Nom",
   },
   details: {
     back: "Retour à la liste",
@@ -24,6 +25,37 @@ export default {
     loading: "Chargement...",
     start: "Démarrer",
     stop: "Arrêter",
+  },
+  inspect: {
+    basic: {
+      title: "Informations de Base",
+      idFull: "ID Complet",
+      image: "Image",
+      command: "Commande",
+      status: "Statut",
+      createdAt: "Créé le",
+      platform: "Plateforme",
+    },
+    network: {
+      title: "Réseau & Ports",
+      ipAddresses: "Adresses IP",
+      hostNone: "Host/None",
+      portMapping: "Mappage des Ports",
+    },
+    env: {
+      title: "Variables d'Environnement ({count})",
+      copyValue: "Copier la Valeur",
+    },
+    viewToggle: {
+      jsonRaw: "JSON Brut",
+      overview: "Vue d'ensemble",
+      seeFormatted: "Voir Formaté",
+      seeRawJson: "Voir le JSON Brut",
+    },
+  },
+  stats: {
+    stoppedTitle: "Conteneur Arrêté",
+    stoppedDescription: "Démarrez le conteneur pour voir les statistiques en temps réel.",
   },
   runModal: {
     title: "Exécuter un Nouveau Conteneur",
@@ -59,5 +91,12 @@ export default {
     start: "Démarrer",
     stop: "Arrêter",
     remove: "Supprimer",
+  },
+  mappingRow: {
+    hostPlaceholderPort: "Ex : 8080",
+    hostPlaceholderVolume: "/home/user/projet",
+    browseFolder: "Sélectionner un Dossier",
+    containerPlaceholderPort: "Ex : 80",
+    containerPlaceholderVolume: "/app/data",
   },
 };

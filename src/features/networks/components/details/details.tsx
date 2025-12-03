@@ -11,25 +11,27 @@ import { useUIStore } from "../../../../stores/ui-store";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../../ui/tabs/tabs";
 import { ContainersTab } from "./container-tab";
 import { Button } from "../../../../ui/button";
+import { useI18n } from "../../../../i18n";
 
 export const NetworkDetailsPage: Component = () => {
   const { selectedNetworkId, setSelectedNetworkId } = useUIStore();
   const { removeNetwork } = useNetworkActions();
   const [isDeleting, setIsDeleting] = createSignal(false);
+  const { t } = useI18n();
 
   const query = useNetworkDetails(selectedNetworkId);
   const data = () => query.data;
 
   const handleDelete = async () => {
     if (!data()) return;
-    if (!confirm(`Deletar rede ${data()?.Name}?`)) return;
+    if (!confirm(t("networks.details.confirmDelete", { name: data()?.Name ?? "" }))) return;
 
     setIsDeleting(true);
     try {
       const net = data();
       if (!net) return;
       removeNetwork(net.Id);
-      toast.success("Rede removida.");
+      toast.success(t("networks.details.removed"));
       setSelectedNetworkId(null);
     } catch (e) {
       toast.error(String(e));
@@ -43,19 +45,19 @@ export const NetworkDetailsPage: Component = () => {
       <Show when={query.isLoading}>
         <div class="p-12 flex justify-center items-center gap-3 text-neutral-500">
           <Loader2 class="w-8 h-8 animate-spin text-blue-500" />
-          Carregando detalhes da rede...
+          {t("networks.details.loading")}
         </div>
       </Show>
 
       {/* 2. ESTADO DE ERRO (O que faltava!) */}
       <Show when={query.isError}>
         <div class="p-12 flex flex-col items-center gap-4 text-center">
-          <div class="text-red-500 font-bold">Erro ao carregar rede</div>
+          <div class="text-red-500 font-bold">{t("networks.details.error")}</div>
           <code class="bg-red-950/30 text-red-400 px-4 py-2 rounded border border-red-900/50 font-mono text-sm break-all max-w-2xl">
             {String(query.error)}
           </code>
           <Button variant="outline" onClick={() => setSelectedNetworkId(null)}>
-            Voltar para a Lista
+            {t("networks.details.backToList")}
           </Button>
         </div>
       </Show>
@@ -64,7 +66,7 @@ export const NetworkDetailsPage: Component = () => {
       <Show when={!query.isLoading && !query.isError && data()}>
         {/* Use o operador de coalescência nula (??) para garantir um valor padrão */}
         <NetworkHeader
-          name={data()?.Name ?? "Sem Nome"}
+          name={data()?.Name ?? t("networks.details.noName")}
           id={data()?.Id ?? ""}
           onBack={() => setSelectedNetworkId(null)}
           onDelete={handleDelete}
@@ -74,10 +76,10 @@ export const NetworkDetailsPage: Component = () => {
         <Tabs defaultValue="overview" class="flex-1 flex flex-col min-h-0">
           <TabsList>
             <TabsTrigger value="overview" class="flex items-center gap-2">
-              <Info class="w-4 h-4" /> Visão Geral
+              <Info class="w-4 h-4" /> {t("networks.details.overview")}
             </TabsTrigger>
             <TabsTrigger value="containers" class="flex items-center gap-2">
-              <Box class="w-4 h-4" /> Containers
+              <Box class="w-4 h-4" /> {t("networks.details.containers")}
             </TabsTrigger>
             <TabsTrigger value="inspect" class="flex items-center gap-2">
               <FileJson class="w-4 h-4" /> JSON

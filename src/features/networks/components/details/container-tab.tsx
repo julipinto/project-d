@@ -1,5 +1,6 @@
 import { type Component, For } from "solid-js";
 import { Box } from "lucide-solid";
+import { useI18n } from "../../../../i18n";
 
 interface Props {
   containers: Record<
@@ -13,20 +14,21 @@ interface Props {
 }
 export const ContainersTab: Component<Props> = (props) => {
   const list = () => Object.values(props.containers || {});
+  const { t } = useI18n();
 
   return (
     <div class="border border-neutral-800 rounded-lg overflow-hidden">
       <div class="flex gap-4 p-3 bg-[#0d1117] border-b border-neutral-800 text-neutral-500 font-bold text-xs uppercase tracking-wider">
-        <div class="flex-1">Container</div>
-        <div class="w-40">IPv4 Address</div>
-        <div class="w-40">IPv6 Address</div>
+        <div class="flex-1">{t("networks.details.containersTab.headerContainer")}</div>
+        <div class="w-40">{t("networks.details.containersTab.headerIPv4")}</div>
+        <div class="w-40">{t("networks.details.containersTab.headerIPv6")}</div>
       </div>
 
       <For
         each={list()}
         fallback={
           <div class="p-12 text-center text-neutral-600 italic">
-            Nenhum container conectado nesta rede.
+            {t("networks.details.containersTab.empty")}
           </div>
         }
       >

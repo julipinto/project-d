@@ -11,8 +11,8 @@ interface ContextConfigResponse {
   connection_type: ConnectionType;
 }
 
-// --- ESTADOS GLOBAIS (SINGLETON) ---
-// Iniciam com valores padrão, mas serão sobrescritos pelo disco no onMount
+// --- Global singleton state ---
+// Starts with default values, then is overridden from disk on mount
 const [activeConnection, setActiveConnection] = createSignal("unix:///var/run/docker.sock");
 const [connectionType, setConnectionType] = createSignal<ConnectionType>("local");
 const [customPath, setCustomPath] = createSignal("");
@@ -20,51 +20,51 @@ const [customPath, setCustomPath] = createSignal("");
 export function useDockerContextActions() {
   const queryClient = useQueryClient();
 
-  // 1. Sincronia Inicial: Disco -> Memória -> Rust
+  // 1. Initial sync: Disk -> Memory -> Rust
   onMount(async () => {
     try {
       const savedConn = await getSetting<string>("docker.active-connection");
       const savedType = await getSetting<ConnectionType>("docker.connection-type");
       // const savedInput = await getSetting<string>("docker.custom-path-input");
 
-      // Se existe conexão salva, aplica no Rust e no Estado
+      // If there is a saved connection, apply it in Rust and in memory
       if (savedConn) {
         setActiveConnection(savedConn);
         if (savedType) setConnectionType(savedType);
 
-        // Avisa o Rust para usar esse socket (sem await para não bloquear UI)
+        // Tell Rust to use this socket (fire-and-forget to avoid blocking UI)
         invoke("set_docker_context", { endpoint: savedConn }).catch(console.error);
       }
 
-      // Restaura o que estava escrito no input
+      // Restore what was previously written in the input
       // if (savedInput) setCustomPath(savedInput);
     } catch (e) {
       console.error("Erro ao carregar configurações:", e);
     }
   });
 
-  // 2. Aplicar Contexto: UI -> Rust -> Memória -> Disco
+  // 2. Apply context: UI -> Rust -> Memory -> Disk
   const applyContext = async (endpoint: string) => {
     try {
-      // Chama o Rust e espera o objeto formatado { uri, connection_type }
+      // Call Rust and wait for the formatted object { uri, connection_type }
       const response = await invoke<ContextConfigResponse>("set_docker_context", { endpoint });
 
-      console.log("Contexto aplicado:", response);
+      console.log("Docker context applied:", response);
 
-      // Atualiza Estado em Memória
+      // Update in-memory state
       setActiveConnection(response.uri);
       setConnectionType(response.connection_type);
-      // setCustomPath(response.uri); // Atualiza o input visual também
+      // setCustomPath(response.uri); // Also update the visible input
 
-      // Salva no Disco (Persistência)
+      // Persist on disk
       await saveSetting("docker.active-connection", response.uri);
       await saveSetting("docker.connection-type", response.connection_type);
       await saveSetting("docker.custom-path-input", response.uri);
 
-      // Reseta as queries para buscar dados do novo docker
+      // Reset queries so we fetch data from the new Docker context
       queryClient.invalidateQueries();
     } catch (err) {
-      alert(`Erro ao conectar: ${err}`);
+      alert(`Error connecting to Docker: ${err}`);
     }
   };
 
@@ -82,9 +82,9 @@ export function useDockerContextActions() {
         return;
       }
 
-      // Apenas preenche o input visual
+      // Only update the visible input
       setCustomPath(selected);
-      // Salva o rascunho do input no disco (opcional, mas bom para UX)
+      // Save input draft on disk (optional, but good for UX)
       saveSetting("docker.custom-path-input", selected);
     } catch (err) {
       console.error("Erro ao abrir diálogo:", err);

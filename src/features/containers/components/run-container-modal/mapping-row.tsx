@@ -1,6 +1,7 @@
 import { type Component, Show } from "solid-js";
 import { Laptop, Box, FolderOpen, ArrowRight } from "lucide-solid";
 import { Button } from "../../../../ui/button";
+import { useI18n } from "../../../../i18n";
 
 interface Props {
   type: "port" | "volume"; // Define os ícones e textos
@@ -13,6 +14,7 @@ interface Props {
 
 export const MappingRow: Component<Props> = (props) => {
   const isPort = props.type === "port";
+  const { t } = useI18n();
 
   return (
     <div class="col-span-2 bg-neutral-900/30 border border-neutral-800 rounded-lg overflow-hidden group focus-within:border-blue-500/50 focus-within:bg-blue-500/5 transition-colors">
@@ -40,7 +42,11 @@ export const MappingRow: Component<Props> = (props) => {
             type="text"
             value={props.hostValue}
             onInput={(e) => props.onHostInput(e.currentTarget.value)}
-            placeholder={isPort ? "Ex: 8080" : "/home/user/projeto"}
+            placeholder={
+              isPort
+                ? t("containers.mappingRow.hostPlaceholderPort")
+                : t("containers.mappingRow.hostPlaceholderVolume")
+            }
             class="w-full h-full bg-transparent border-none outline-none text-sm px-3 text-white placeholder:text-neutral-600 font-mono"
           />
 
@@ -52,7 +58,7 @@ export const MappingRow: Component<Props> = (props) => {
                 size="icon-sm"
                 onClick={props.onBrowse}
                 class="text-neutral-500 hover:text-white h-7 w-7"
-                title="Selecionar Pasta"
+                title={t("containers.mappingRow.browseFolder")}
               >
                 <FolderOpen class="w-3.5 h-3.5" />
               </Button>
@@ -69,7 +75,11 @@ export const MappingRow: Component<Props> = (props) => {
             type="text"
             value={props.containerValue}
             onInput={(e) => props.onContainerInput(e.currentTarget.value)}
-            placeholder={isPort ? "Ex: 80" : "/app/data"}
+            placeholder={
+              isPort
+                ? t("containers.mappingRow.containerPlaceholderPort")
+                : t("containers.mappingRow.containerPlaceholderVolume")
+            }
             class="w-full h-full bg-transparent border-none outline-none text-sm px-3 text-right text-white placeholder:text-neutral-600 font-mono"
           />
         </div>

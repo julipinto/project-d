@@ -42,11 +42,13 @@ import systemFr from "./locales/system/fr";
 export type Locale = "pt-BR" | "en" | "es" | "fr";
 
 // Helper function to flatten and prefix
-function flattenWithPrefix(obj: any, prefix: string): Record<string, string> {
+function flattenWithPrefix(obj: unknown, prefix: string): Record<string, string> {
   const flattened: Record<string, string> = {};
-  for (const [key, value] of Object.entries(obj)) {
+  if (!obj || typeof obj !== "object" || Array.isArray(obj)) return flattened;
+
+  for (const [key, value] of Object.entries(obj as Record<string, unknown>)) {
     const newKey = `${prefix}.${key}`;
-    if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+    if (value && typeof value === "object" && !Array.isArray(value)) {
       Object.assign(flattened, flattenWithPrefix(value, newKey));
     } else if (typeof value === "string") {
       flattened[newKey] = value;

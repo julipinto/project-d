@@ -11,10 +11,12 @@ import { GeneralTab } from "./general-tab";
 import { HistoryTab } from "./history-tab";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../../ui/tabs/tabs";
 import { useUIStore } from "../../../../stores/ui-store";
+import { useI18n } from "../../../../i18n";
 
 export const ImageDetailsPage: Component = () => {
   const { selectedImageId, setSelectedImageId, navigateToRun } = useUIStore();
   const { removeImage } = useImageActions();
+  const { t } = useI18n();
 
   const queries = useImageDetails(selectedImageId);
   const info = () => queries.inspect.data;
@@ -25,15 +27,15 @@ export const ImageDetailsPage: Component = () => {
   const mainTag = () => tags()[0] || shortId();
 
   const handleDelete = async () => {
-    if (!confirm(`Deletar imagem ${mainTag()}?`)) return;
+    if (!confirm(t("images.details.deleteConfirm", { name: mainTag() }))) return;
     const id = selectedImageId();
     if (!id) {
-      toast.error("Nenhuma imagem selecionada.");
+      toast.error(t("images.details.noImageSelected"));
       return;
     }
     try {
       await removeImage(id);
-      toast.success("Imagem removida.");
+      toast.success(t("images.details.removed"));
       setSelectedImageId(null);
     } catch (e) {
       toast.error(String(e));
@@ -53,7 +55,8 @@ export const ImageDetailsPage: Component = () => {
       <div class="flex-1 overflow-hidden flex flex-col min-h-0">
         <Show when={queries.inspect.isLoading}>
           <div class="p-12 flex justify-center text-neutral-500 gap-3">
-            <Loader2 class="w-8 h-8 animate-spin text-blue-500" /> Carregando detalhes...
+            <Loader2 class="w-8 h-8 animate-spin text-blue-500" />{" "}
+            {t("images.details.loadingDetails")}
           </div>
         </Show>
 
@@ -61,13 +64,13 @@ export const ImageDetailsPage: Component = () => {
           <Tabs defaultValue="overview" class="flex-1 flex flex-col min-h-0">
             <TabsList>
               <TabsTrigger value="overview" class="flex items-center gap-2">
-                <Info class="w-4 h-4" /> Visão Geral
+                <Info class="w-4 h-4" /> {t("images.details.tabs.overview")}
               </TabsTrigger>
               <TabsTrigger value="history" class="flex items-center gap-2">
-                <Layers class="w-4 h-4" /> Histórico
+                <Layers class="w-4 h-4" /> {t("images.details.tabs.history")}
               </TabsTrigger>
               <TabsTrigger value="inspect" class="flex items-center gap-2">
-                <FileJson class="w-4 h-4" /> JSON
+                <FileJson class="w-4 h-4" /> {t("images.details.tabs.inspect")}
               </TabsTrigger>
             </TabsList>
 

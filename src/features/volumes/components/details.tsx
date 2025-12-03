@@ -8,11 +8,13 @@ import { useVolumeActions } from "../hooks/use-volume-actions";
 import { useVolumeDetails } from "../hooks/use-volume-details";
 import { Button } from "../../../ui/button";
 import { formatTimeAgo } from "../../../utils/format";
+import { useI18n } from "../../../i18n";
 
 export const VolumeDetailsPage: Component = () => {
   const { selectedVolumeName, setSelectedVolumeName } = useUIStore();
   const { removeVolume } = useVolumeActions();
   const [isDeleting, setIsDeleting] = createSignal(false);
+  const { t } = useI18n();
 
   // O nome vem da store global agora
   const volumeName = () => selectedVolumeName();
@@ -25,13 +27,13 @@ export const VolumeDetailsPage: Component = () => {
 
     if (!name) return;
 
-    const confirmed = confirm(`Tem certeza que deseja remover o volume "${name}"?`);
+    const confirmed = confirm(t("volumes.details.itemDeleteConfirm", { name }));
     if (!confirmed) return;
 
     setIsDeleting(true);
     try {
       await removeVolume(name);
-      toast.success("Volume removido.");
+      toast.success(t("volumes.details.removed"));
       setSelectedVolumeName(null);
     } catch (e) {
       toast.error(String(e));
@@ -48,7 +50,7 @@ export const VolumeDetailsPage: Component = () => {
             variant="ghost"
             size="icon"
             onClick={() => setSelectedVolumeName(null)}
-            title="Voltar"
+            title={t("volumes.details.back")}
           >
             <ArrowLeft class="w-5 h-5" />
           </Button>
@@ -57,7 +59,7 @@ export const VolumeDetailsPage: Component = () => {
             <h2 class="text-xl font-bold text-white tracking-tight flex items-center gap-3">
               {volumeName()}
               <span class="text-xs font-mono font-normal text-neutral-500 bg-neutral-900 px-2 py-0.5 rounded border border-neutral-800">
-                VOLUME
+                {t("volumes.details.volume")}
               </span>
             </h2>
           </div>
@@ -67,7 +69,7 @@ export const VolumeDetailsPage: Component = () => {
           <Show when={isDeleting()} fallback={<Trash2 class="w-4 h-4" />}>
             <Loader2 class="w-4 h-4 animate-spin" />
           </Show>
-          Deletar Volume
+          {t("volumes.details.deleteVolume")}
         </Button>
       </div>
 
@@ -76,7 +78,7 @@ export const VolumeDetailsPage: Component = () => {
         <Show when={query.isLoading}>
           <div class="p-12 text-center text-neutral-500 flex flex-col items-center gap-3">
             <Loader2 class="w-8 h-8 animate-spin text-blue-500" />
-            Carregando detalhes...
+            {t("volumes.details.loading")}
           </div>
         </Show>
 
@@ -84,19 +86,19 @@ export const VolumeDetailsPage: Component = () => {
           {/* Card Principal */}
           <section class="bg-[#161b22] border border-neutral-800 rounded-xl p-6 shadow-sm">
             <h3 class="text-sm font-bold text-neutral-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-              <Database class="w-4 h-4" /> Informações Gerais
+              <Database class="w-4 h-4" /> {t("volumes.details.headerTitle")}
             </h3>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <InfoBox label="Driver" value={data()?.base.Driver} />
               <InfoBox
-                label="Criado em"
+                label={t("volumes.details.createdAt")}
                 value={formatTimeAgo(new Date(data()?.base.CreatedAt || "").getTime() / 1000)}
                 sub={new Date(data()?.base.CreatedAt || "").toLocaleString()}
               />
               <div class="md:col-span-2">
                 <div class="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-1 flex items-center gap-2">
-                  <HardDrive class="w-3 h-3" /> Mountpoint (Local no Disco)
+                  <HardDrive class="w-3 h-3" /> {t("volumes.details.mountpointTitle")}
                 </div>
                 <code class="block w-full bg-black/30 border border-neutral-800 p-3 rounded-lg text-sm font-mono text-neutral-300 select-text break-all">
                   {data()?.base.Mountpoint}
@@ -108,7 +110,8 @@ export const VolumeDetailsPage: Component = () => {
           {/* Lista de Containers */}
           <section class="bg-[#161b22] border border-neutral-800 rounded-xl p-6 shadow-sm">
             <h3 class="text-sm font-bold text-neutral-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-              <Link class="w-4 h-4" /> Utilizado por ({data()?.used_by.length})
+              <Link class="w-4 h-4" />{" "}
+              {t("volumes.details.usedByTitle", { count: data()?.used_by.length || 0 })}
             </h3>
 
             <div class="border border-neutral-800 rounded-lg overflow-hidden">
@@ -116,7 +119,7 @@ export const VolumeDetailsPage: Component = () => {
                 each={data()?.used_by}
                 fallback={
                   <div class="p-8 text-center text-neutral-600 italic bg-neutral-900/30">
-                    Este volume não está conectado a nenhum container no momento.
+                    {t("volumes.details.usedByEmpty")}
                   </div>
                 }
               >

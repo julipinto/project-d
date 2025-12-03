@@ -2,6 +2,7 @@ import { type Component, For } from "solid-js";
 import { Box, Calendar, HardDrive, FileCode, type LucideIcon } from "lucide-solid";
 import { formatBytes, formatTimeAgo } from "../../../../utils/format";
 import type { ImageInspect } from "../../hooks/use-image-details";
+import { useI18n } from "../../../../i18n";
 
 interface Props {
   info?: ImageInspect | null;
@@ -20,32 +21,43 @@ const InfoCard = (props: { label: string; value: string; icon: LucideIcon }) => 
 );
 
 export const GeneralTab: Component<Props> = (props) => {
+  const { t } = useI18n();
   return (
     <div class="space-y-8 p-6">
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <InfoCard label="Tamanho" value={formatBytes(props.info?.Size ?? 0)} icon={HardDrive} />
         <InfoCard
-          label="OS / Arq"
+          label={t("images.details.general.size")}
+          value={formatBytes(props.info?.Size ?? 0)}
+          icon={HardDrive}
+        />
+        <InfoCard
+          label={t("images.details.general.osArch")}
           value={`${props.info?.Os || "?"} / ${props.info?.Architecture || "?"}`}
           icon={Box}
         />
         <InfoCard
-          label="Criado"
+          label={t("images.details.general.created")}
           value={formatTimeAgo(new Date(props.info?.Created ?? 0).getTime() / 1000)}
           icon={Calendar}
         />
-        <InfoCard label="Versão Docker" value={props.info?.DockerVersion || "-"} icon={FileCode} />
+        <InfoCard
+          label={t("images.details.general.dockerVersion")}
+          value={props.info?.DockerVersion || "-"}
+          icon={FileCode}
+        />
       </div>
 
       <section class="bg-[#161b22] border border-neutral-800 rounded-xl p-6 shadow-sm">
         <h3 class="text-sm font-bold text-neutral-400 uppercase tracking-wider mb-4">
-          Variáveis de Ambiente Padrão
+          {t("images.details.general.defaultEnvTitle")}
         </h3>
         <div class="grid gap-2">
           <For
             each={props.info?.Config?.Env || []}
             fallback={
-              <span class="text-neutral-500 italic text-sm">Nenhuma variável definida.</span>
+              <span class="text-neutral-500 italic text-sm">
+                {t("images.details.general.noEnv")}
+              </span>
             }
           >
             {(env) => (

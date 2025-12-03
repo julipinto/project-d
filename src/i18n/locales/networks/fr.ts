@@ -21,5 +21,31 @@ export default {
     containers: "Conteneurs",
     confirmDelete: "Supprimer le réseau {name}?",
     removed: "Réseau supprimé.",
+    noName: "Sans Nom",
+    general: {
+      notFound: "Réseau introuvable.",
+      driver: "Pilote",
+      scope: "Portée",
+      internal: "Interne",
+      yes: "Oui",
+      no: "Non",
+      created: "Créé",
+      ipamTitle: "Configuration IPAM (Gestion des Adresses IP)",
+      subnetLabel: "Sous-réseau",
+      gatewayLabel: "Passerelle",
+      autoNA: "Auto / N/A",
+    },
+    containersTab: {
+      headerContainer: "Conteneur",
+      headerIPv4: "Adresse IPv4",
+      headerIPv6: "Adresse IPv6",
+      empty: "Aucun conteneur connecté à ce réseau.",
+    },
+    itemRow: {
+      internalTitle: "Réseau Interne (Pas d'accès externe)",
+      removeTitle: "Supprimer le Réseau",
+      deleteConfirm:
+        'Êtes-vous sûr de vouloir supprimer le réseau "{name}" ?\nCela échouera s\'il y a des conteneurs connectés.',
+    },
   },
 };

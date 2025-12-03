@@ -102,7 +102,9 @@ export function ImageList() {
                     <div class="flex flex-col items-center gap-2">
                       <Box class="w-8 h-8 opacity-20" />
                       <span class="italic">
-                        {query.isLoading ? "Buscando..." : "Nenhuma imagem encontrada."}
+                        {query.isLoading
+                          ? t("images.list.empty.loading")
+                          : t("images.list.empty.noImages")}
                       </span>
                     </div>
                   </td>

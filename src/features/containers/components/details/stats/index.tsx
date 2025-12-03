@@ -4,6 +4,7 @@ import { Cpu, HardDrive, Loader2, PowerOff } from "lucide-solid";
 import { useContainerInspect } from "../../../hooks/use-container-inspect";
 import { useContainerStats } from "../../../hooks/use-container-stats";
 import { formatBytes } from "../../../../../utils/format";
+import { useI18n } from "../../../../../i18n";
 
 interface Props {
   containerId: string;
@@ -21,6 +22,7 @@ export const StatsView: Component<Props> = (props) => {
   const [cpuHistory, setCpuHistory] = createSignal<{ x: number; y: number }[]>([]);
   const [memHistory, setMemHistory] = createSignal<{ x: number; y: number }[]>([]);
   const [hasData, setHasData] = createSignal(false);
+  const { t } = useI18n();
 
   createEffect(() => {
     const s = stats();
@@ -65,10 +67,8 @@ export const StatsView: Component<Props> = (props) => {
           <PowerOff class="w-8 h-8 opacity-50" />
         </div>
         <div class="text-center">
-          <h3 class="text-lg font-medium text-neutral-300">Container Parado</h3>
-          <p class="text-sm max-w-xs mt-1">
-            Inicie o container para visualizar as métricas de CPU e Memória em tempo real.
-          </p>
+          <h3 class="text-lg font-medium text-neutral-300">{t("containers.stats.stoppedTitle")}</h3>
+          <p class="text-sm max-w-xs mt-1">{t("containers.stats.stoppedDescription")}</p>
         </div>
       </div>
     );

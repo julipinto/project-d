@@ -3,6 +3,7 @@ import { Copy } from "lucide-solid";
 import { Section, InfoGrid, InfoItem } from "./layout-helpers";
 import type { ContainerInspectInfo } from "../../../types";
 import { Button } from "../../../../../ui/button";
+import { useI18n } from "../../../../../i18n";
 
 interface Props {
   data: ContainerInspectInfo | undefined;
@@ -10,6 +11,8 @@ interface Props {
 
 export const FormattedView: Component<Props> = (props) => {
   if (!props.data) return null;
+
+  const { t } = useI18n();
 
   const envs = () => props.data?.Config?.Env || [];
   const networks = () =>
@@ -27,32 +30,41 @@ export const FormattedView: Component<Props> = (props) => {
   return (
     <div class="space-y-2 max-w-5xl mx-auto">
       {/* --- SEÇÃO 1: BÁSICO --- */}
-      <Section title="Informações Básicas">
+      <Section title={t("containers.inspect.basic.title")}>
         <InfoGrid>
-          <InfoItem label="ID Completo" value={props.data?.Id} />
-          <InfoItem label="Imagem" value={props.data?.Config?.Image} />
-          <InfoItem label="Comando" value={props.data?.Config?.Cmd?.join(" ")} />
-          <InfoItem label="Status" value={props.data?.State?.Status} />
+          <InfoItem label={t("containers.inspect.basic.idFull")} value={props.data?.Id} />
+          <InfoItem label={t("containers.inspect.basic.image")} value={props.data?.Config?.Image} />
           <InfoItem
-            label="Criado em"
+            label={t("containers.inspect.basic.command")}
+            value={props.data?.Config?.Cmd?.join(" ")}
+          />
+          <InfoItem
+            label={t("containers.inspect.basic.status")}
+            value={props.data?.State?.Status}
+          />
+          <InfoItem
+            label={t("containers.inspect.basic.createdAt")}
             value={props.data?.Created ? new Date(props.data.Created).toLocaleString() : "-"}
           />
-          <InfoItem label="Platform" value={props.data?.Platform} />
+          <InfoItem label={t("containers.inspect.basic.platform")} value={props.data?.Platform} />
         </InfoGrid>
       </Section>
 
       {/* --- SEÇÃO 2: REDE --- */}
-      <Section title="Rede & Portas">
+      <Section title={t("containers.inspect.network.title")}>
         <div class="bg-neutral-900/50 border border-neutral-800 rounded p-4 font-mono text-xs space-y-4">
           {/* IPs */}
           <div>
-            <div class="text-neutral-500 mb-2 font-bold uppercase text-[10px]">Endereços IP</div>
+            <div class="text-neutral-500 mb-2 font-bold uppercase text-[10px]">
+              {t("containers.inspect.network.ipAddresses")}
+            </div>
             <For each={Object.entries(networks())}>
               {([name, net]) => (
                 <div class="flex justify-between border-b border-neutral-800 pb-1 mb-1 last:border-0">
                   <span class="text-blue-300">{name}</span>
                   <span class="text-emerald-400">
-                    {(net as { IPAddress?: string }).IPAddress || "Host/None"}
+                    {(net as { IPAddress?: string }).IPAddress ||
+                      t("containers.inspect.network.hostNone")}
                   </span>
                 </div>
               )}
@@ -62,7 +74,7 @@ export const FormattedView: Component<Props> = (props) => {
           {/* Portas */}
           <div>
             <div class="text-neutral-500 mb-2 font-bold uppercase text-[10px]">
-              Mapeamento de Portas
+              {t("containers.inspect.network.portMapping")}
             </div>
             <div class="grid grid-cols-1 gap-1">
               <For each={Object.entries(ports())}>
@@ -86,7 +98,7 @@ export const FormattedView: Component<Props> = (props) => {
       </Section>
 
       {/* --- SEÇÃO 3: ENV VARS --- */}
-      <Section title={`Variáveis de Ambiente (${envs().length})`}>
+      <Section title={t("containers.inspect.env.title", { count: envs().length })}>
         <div class="grid grid-cols-1 gap-2">
           <For each={envs()}>
             {(env: string) => {
@@ -108,7 +120,7 @@ export const FormattedView: Component<Props> = (props) => {
                     size="icon"
                     onClick={() => copyToClipboard(value)}
                     class="opacity-0 group-hover:opacity-100 shrink-0 h-7 w-7 text-neutral-500 hover:text-white"
-                    title="Copiar Valor"
+                    title={t("containers.inspect.env.copyValue")}
                   >
                     <Copy class="w-3.5 h-3.5" />
                   </Button>

@@ -4,6 +4,7 @@ import type { Volume } from "../types";
 import { useVolumeActions } from "../hooks/use-volume-actions";
 import { formatTimeAgo } from "../../../utils/format";
 import { Button } from "../../../ui/button";
+import { useI18n } from "../../../i18n";
 
 interface Props {
   volume: Volume;
@@ -13,6 +14,7 @@ interface Props {
 export const VolumeItemRow: Component<Props> = (props) => {
   const { removeVolume } = useVolumeActions();
   const [isDeleting, setIsDeleting] = createSignal(false);
+  const { t } = useI18n();
 
   // Data no formato ISO string -> Timestamp
   const createdTimestamp = () => {
@@ -26,16 +28,14 @@ export const VolumeItemRow: Component<Props> = (props) => {
 
     if (isDeleting()) return;
 
-    const confirmed = confirm(
-      `Tem certeza que deseja remover o volume "${props.volume.Name}"?\nIsso apagará todos os dados permanentemente.`,
-    );
+    const confirmed = confirm(t("volumes.details.itemDeleteConfirm", { name: props.volume.Name }));
     if (!confirmed) return;
 
     setIsDeleting(true);
     try {
       await removeVolume(props.volume.Name);
     } catch (error) {
-      alert(`Erro: ${error}`);
+      alert(String(error));
       setIsDeleting(false); // Só reseta se der erro
     }
   };
@@ -54,7 +54,7 @@ export const VolumeItemRow: Component<Props> = (props) => {
               variant="link"
               onClick={props.onInspect}
               class="font-medium text-neutral-200 truncate max-w-xs text-left hover:text-blue-400 hover:underline decoration-blue-500/50 decoration-2 underline-offset-2 transition-colors"
-              title="Inspecionar Volume"
+              title={t("volumes.details.inspectVolumeTitle")}
             >
               {props.volume.Name}
             </Button>
@@ -90,7 +90,7 @@ export const VolumeItemRow: Component<Props> = (props) => {
           size="icon"
           onClick={handleDelete}
           disabled={isDeleting()}
-          title="Remover Volume"
+          title={t("volumes.details.removeVolumeTitle")}
           class="text-neutral-500 hover:text-red-400 hover:bg-red-900/20"
         >
           <Show when={!isDeleting()} fallback={<Loader2 class="w-4 h-4 animate-spin" />}>

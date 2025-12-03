@@ -17,6 +17,7 @@ export default {
       loading: "Loading containers...",
       noContainers: "No containers running at the moment.",
     },
+    noName: "No Name",
   },
   details: {
     back: "Back to list",
@@ -24,6 +25,37 @@ export default {
     loading: "Loading...",
     start: "Start",
     stop: "Stop",
+  },
+  inspect: {
+    basic: {
+      title: "Basic Information",
+      idFull: "Full ID",
+      image: "Image",
+      command: "Command",
+      status: "Status",
+      createdAt: "Created at",
+      platform: "Platform",
+    },
+    network: {
+      title: "Network & Ports",
+      ipAddresses: "IP Addresses",
+      hostNone: "Host/None",
+      portMapping: "Port Mapping",
+    },
+    env: {
+      title: "Environment Variables ({count})",
+      copyValue: "Copy Value",
+    },
+    viewToggle: {
+      jsonRaw: "Raw JSON",
+      overview: "Overview",
+      seeFormatted: "See Formatted",
+      seeRawJson: "See Raw JSON",
+    },
+  },
+  stats: {
+    stoppedTitle: "Container Stopped",
+    stoppedDescription: "Start the container to see real-time statistics.",
   },
   runModal: {
     title: "Run New Container",
@@ -59,5 +91,12 @@ export default {
     start: "Start",
     stop: "Stop",
     remove: "Remove",
+  },
+  mappingRow: {
+    hostPlaceholderPort: "E.g. 8080",
+    hostPlaceholderVolume: "/home/user/project",
+    browseFolder: "Select Folder",
+    containerPlaceholderPort: "E.g. 80",
+    containerPlaceholderVolume: "/app/data",
   },
 };

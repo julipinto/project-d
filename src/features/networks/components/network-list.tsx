@@ -7,7 +7,6 @@ import { SearchInput } from "../../../ui/search-input";
 import { useI18n } from "../../../i18n";
 
 export function NetworkList() {
-  console.log("Rendering NetworkList");
   const [inputValue, setInputValue, searchQuery] = createDebouncedSignal("", 300);
   const { t } = useI18n();
   const query = useNetworks(searchQuery);
