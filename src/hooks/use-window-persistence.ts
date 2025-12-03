@@ -1,6 +1,5 @@
 import { onMount } from "solid-js";
 import { getCurrentWindow, PhysicalSize, PhysicalPosition } from "@tauri-apps/api/window";
-// Adicionamos availableMonitors para ver todas as telas
 import { availableMonitors } from "@tauri-apps/api/window";
 import { getSetting, saveSetting } from "../stores/disk-settings-store";
 
