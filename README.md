@@ -20,6 +20,7 @@
 </div>
 
 ---
+<img src="./gh_media/porto-resumed-presentation.gif" alt="gif with porto running">
 
 ## 📖 Overview
 
