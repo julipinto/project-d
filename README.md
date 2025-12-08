@@ -1,7 +1,7 @@
 # Porto
 
 <div align="center">
-  <img src="src/assets/logo.svg" alt="Porto Logo" width="120" height="120" />
+  <img src="src/assets/logo2.svg" alt="Porto Logo" width="80" height="80" />
   
   <h3>The Native, Lightweight Docker Manager.</h3>
   

@@ -15,7 +15,7 @@ export const SidebarHeader: Component<Props> = (props) => {
       >
         {/* Logo mais limpo (sem fundo azul boxy) */}
         <div class="text-blue-500 shrink-0">
-          <LayoutGrid class="w-7 h-7" />
+          <img src="src/assets/logo2.svg" class="w-7 h-7"/>
         </div>
 
         <div
